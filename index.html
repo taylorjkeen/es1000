@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ES 1000">
+  <title>ES 1000</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;background:#0F1923;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#F5EDD6;overflow:hidden}
+    #app{height:100dvh;display:flex;flex-direction:column;max-width:430px;margin:0 auto}
+    .hdr{padding:20px 20px 0;border-bottom:1px solid #243546;flex-shrink:0}
+    .hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .ttl{font-size:22px;font-weight:800;letter-spacing:-.5px}.ttl span{color:#00A86B}
+    .sub{font-size:12px;color:#8BA0B4;margin-top:2px}
+    .hdr-r{text-align:right;font-size:11px;color:#8BA0B4}
+    .hacc{font-size:13px;color:#E8B45A;font-weight:700}
+    .pbar{background:#243546;border-radius:3px;height:3px;margin-bottom:14px;overflow:hidden}
+    .pfill{height:100%;background:linear-gradient(90deg,#00A86B,#E8B45A);border-radius:3px;transition:width .4s}
+    .tabs{display:flex}
+    .tbtn{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:10px 4px;color:#8BA0B4;font-size:11px;cursor:pointer;letter-spacing:.5px;transition:all .15s}
+    .tbtn.on{color:#00A86B;border-bottom-color:#00A86B;font-weight:700}
+    .tico{font-size:18px;margin-bottom:2px}
+    .fbar{padding:12px 20px 0;flex-shrink:0;display:flex;gap:8px;flex-wrap:wrap}
+    select{background:#172330;border:1px solid #243546;border-radius:10px;padding:8px 10px;color:#F5EDD6;font-size:13px;flex:1;cursor:pointer;-webkit-appearance:none}
+    select option{background:#172330}
+    .fbtn{background:#172330;border:1px solid #243546;border-radius:10px;padding:8px 12px;color:#8BA0B4;font-size:13px;cursor:pointer;white-space:nowrap}
+    .fbtn.on{background:rgba(200,151,58,.2);border-color:#E8B45A;color:#E8B45A}
+    .cnt{flex:1;padding:16px 20px 80px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .card{background:#172330;border:1px solid #243546;border-radius:20px;padding:40px 24px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;position:relative;transition:background .2s;user-select:none}
+    .card.rv{background:#1E2F3E}
+    .cword{font-size:42px;font-weight:700;color:#F5EDD6;text-align:center;letter-spacing:-.5px}
+    .cback{font-size:20px;font-weight:700;color:#F5EDD6;text-align:center}
+    .chint{font-size:13px;color:#8BA0B4}
+    .cbadges{position:absolute;top:16px;right:16px;display:flex;gap:6px}
+    .bdg{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:4px}
+    .brank{color:#8BA0B4;background:#243546}
+    .bmx{color:#E8B45A;background:rgba(200,151,58,.15)}
+    .pverb{color:#5B9BD5;background:rgba(91,155,213,.15)}
+    .pnoun{color:#50C878;background:rgba(80,200,120,.15)}
+    .padj{color:#FFB347;background:rgba(255,179,71,.15)}
+    .padv{color:#DA70D6;background:rgba(218,112,214,.15)}
+    .pprep{color:#87CEEB;background:rgba(135,206,235,.15)}
+    .pconj{color:#DDA0DD;background:rgba(221,160,221,.15)}
+    .ppron{color:#F0E68C;background:rgba(240,230,140,.15)}
+    .pdet{color:#B8860B;background:rgba(184,134,11,.15)}
+    .part{color:#A9A9A9;background:rgba(169,169,169,.15)}
+    .pnum{color:#FFD700;background:rgba(255,215,0,.15)}
+    .pinterj{color:#FF6B6B;background:rgba(255,107,107,.15)}
+    .pother{color:#808080;background:rgba(128,128,128,.15)}
+    .brow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+    .btn{border:none;border-radius:14px;padding:14px;font-size:20px;font-weight:700;cursor:pointer;width:100%}
+    .bwrong{background:rgba(192,57,43,.15);border:1px solid #C0392B;color:#E74C3C}
+    .bskip{background:#243546;border:1px solid #243546;color:#8BA0B4;font-size:16px}
+    .bright{background:rgba(0,104,71,.2);border:1px solid #00A86B;color:#00A86B}
+    .bprim,.bnext{background:#006847;border:none;border-radius:14px;padding:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;width:100%;margin-top:12px}
+    .srow{display:flex;justify-content:space-between;align-items:center;padding:0 4px;margin-bottom:12px}
+    .srow span{font-size:12px}
+    .sc{color:#00A86B}.sw{color:#E74C3C}.sa{color:#C8973A}.sm{color:#8BA0B4}
+    .dbtn{font-size:11px;color:#8BA0B4;background:#243546;border:none;border-radius:6px;padding:3px 8px;cursor:pointer}
+    .obtn{background:#172330;border:1px solid #243546;border-radius:14px;padding:15px 20px;color:#F5EDD6;font-size:16px;cursor:pointer;text-align:left;width:100%;margin-bottom:10px;transition:all .15s}
+    .obtn.cor{background:rgba(0,104,71,.2);border-color:#00A86B;color:#00A86B;font-weight:700}
+    .obtn.wrg{background:rgba(192,57,43,.15);border-color:#E74C3C;color:#E74C3C}
+    .obtn.dim{color:#8BA0B4}
+    .obtn:disabled{cursor:default}
+    .pcard{background:#172330;border:1px solid #243546;border-radius:20px;padding:28px 24px;text-align:center;margin-bottom:12px}
+    .plbl{font-size:13px;color:#8BA0B4;margin-bottom:8px}
+    .pword{font-size:38px;font-weight:700;color:#F5EDD6;margin-bottom:12px}
+    .pbadges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+    .sinp{background:#172330;border:1px solid #243546;border-radius:12px;padding:12px 16px;color:#F5EDD6;font-size:15px;outline:none;width:100%;margin-bottom:8px}
+    .lcnt{font-size:12px;color:#8BA0B4;margin-bottom:8px}
+    .li{background:#172330;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:2px;border-left:3px solid #243546}
+    .li.lg{border-left-color:#00A86B}.li.lo{border-left-color:#E8B45A}.li.lm{border-left-color:#8BA0B4}
+    .lrank{font-size:11px;color:#8BA0B4;min-width:34px}
+    .lword{font-size:17px;font-weight:700;color:#F5EDD6;min-width:85px}
+    .ltrans{font-size:13px;color:#8BA0B4;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .lacc{font-size:11px;min-width:30px;text-align:right}
+    .lacc.g{color:#00A86B}.lacc.o{color:#E8B45A}
+    .pag{display:flex;justify-content:center;gap:10px;padding:8px 0}
+    .pbtn{background:#243546;border:none;border-radius:8px;padding:8px 16px;color:#F5EDD6;cursor:pointer;font-size:16px}
+    .pbtn:disabled{color:#8BA0B4;cursor:default}
+    .pinf{color:#8BA0B4;font-size:13px;padding:8px 4px}
+    .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .scard{background:#172330;border:1px solid #243546;border-radius:16px;padding:18px 16px;text-align:center}
+    .snum{font-size:28px;font-weight:800}.slbl{font-size:12px;color:#8BA0B4;margin-top:4px}
+    .sec{background:#172330;border:1px solid #243546;border-radius:16px;padding:16px;margin-bottom:16px}
+    .sttl{font-size:12px;font-weight:700;color:#8BA0B4;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+    .prow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .pbg{flex:1;background:#243546;border-radius:4px;height:6px;overflow:hidden}
+    .pfb{height:100%;border-radius:4px;transition:width .5s}
+    .ppct{font-size:12px;color:#8BA0B4;min-width:32px}
+    .mwrap{display:flex;flex-wrap:wrap;gap:8px}
+    .mchip{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);border-radius:10px;padding:6px 12px}
+    .mw{color:#F5EDD6;font-weight:700;font-size:14px}.mt{color:#8BA0B4;font-size:12px;margin-left:6px}
+    .emp{text-align:center;color:#8BA0B4;padding:20px;font-size:14px}
+    .fg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div><div class="ttl"><span>ES</span> 1000</div><div class="sub">RAE CREA · CORPES México</div></div>
+      <div class="hdr-r"><div id="sc">0 / 979 seen</div><div class="hacc" id="ha"></div></div>
+    </div>
+    <div class="pbar"><div class="pfill" id="pf" style="width:0%"></div></div>
+    <div class="tabs">
+      <button class="tbtn on" onclick="sw('cards')" id="t-cards"><div class="tico">🃏</div>Cards</button>
+      <button class="tbtn" onclick="sw('quiz')" id="t-quiz"><div class="tico">🔤</div>Quiz</button>
+      <button class="tbtn" onclick="sw('list')" id="t-list"><div class="tico">📋</div>List</button>
+      <button class="tbtn" onclick="sw('stats')" id="t-stats"><div class="tico">📊</div>Stats</button>
+    </div>
+  </div>
+  <div class="fbar" id="fb">
+    <select id="pf2" onchange="af()">
+      <option value="all">All POS</option>
+      <option value="verb">verb</option><option value="noun">noun</option>
+      <option value="adj">adj</option><option value="adv">adv</option>
+      <option value="prep">prep</option><option value="conj">conj</option>
+      <option value="pron">pron</option><option value="num">num</option>
+      <option value="interj">interj</option>
+    </select>
+    <button class="fbtn" id="mxb" onclick="tmx()">🇲🇽 MX only</button>
+    <button class="fbtn" onclick="rf()">Reset</button>
+  </div>
+  <div class="cnt" id="cnt"></div>
+</div>
+<script>
+const RAW=[[1,"de",["of","from"],"prep"],[2,"la",["the (f.)","her","it"],"art"],[3,"que",["that","which","who","than"],"conj"],[4,"el",["the (m.)"],"art"],[5,"en",["in","on","at"],"prep"],[6,"y",["and"],"conj"],[7,"a",["to","at"],"prep"],[8,"los",["the (m.pl.)"],"art"],[9,"se",["himself","herself","itself","oneself"],"pron"],[10,"del",["of the","from the"],"prep"],[11,"las",["the (f.pl.)"],"art"],[12,"un",["a","an (m.)"],"art"],[13,"por",["by","for","through"],"prep"],[14,"con",["with"],"prep"],[15,"no",["no","not"],"adv"],[16,"una",["a","an (f.)"],"art"],[17,"su",["his","her","its","their"],"det"],[18,"para",["for","in order to","to"],"prep"],[19,"es",["is","are (ser)"],"verb"],[20,"al",["to the","at the"],"prep"],[21,"lo",["it","him","the"],"pron"],[22,"como",["as","like","how"],"conj"],[23,"más",["more","most","plus"],"adv"],[24,"o",["or"],"conj"],[25,"pero",["but"],"conj"],[26,"sus",["his","her","their (pl.)"],"det"],[27,"le",["him","her","you (indirect obj.)"],"pron"],[28,"ha",["has (haber)"],"verb"],[29,"me",["me","myself"],"pron"],[30,"si",["if","whether"],"conj"],[31,"sin",["without"],"prep"],[32,"sobre",["on","about","above"],"prep"],[33,"este",["this (m.)"],"det"],[34,"ya",["already","now","anymore"],"adv"],[35,"entre",["between","among"],"prep"],[36,"cuando",["when"],"conj"],[37,"todo",["all","everything","whole"],"det"],[38,"esta",["this (f.)"],"det"],[39,"ser",["to be (permanent)"],"verb"],[40,"son",["they are (ser)"],"verb"],[41,"dos",["two"],"num"],[42,"también",["also","too","as well"],"adv"],[43,"fue",["was","went (ir/ser)"],"verb"],[44,"había",["there was","had (haber)"],"verb"],[45,"era",["was","used to be (ser)"],"verb"],[46,"muy",["very"],"adv"],[47,"años",["years"],"noun"],[48,"hasta",["until","up to","even"],"prep"],[49,"desde",["from","since"],"prep"],[50,"está",["is (estar)"],"verb"],[51,"mi",["my"],"det"],[52,"porque",["because"],"conj"],[53,"qué",["what","which","how"],"pron"],[54,"sólo",["only","just","alone"],"adv"],[55,"han",["have (haber, 3pl)"],"verb"],[56,"yo",["I"],"pron"],[57,"hay",["there is","there are"],"verb"],[58,"vez",["time","occasion","turn"],"noun"],[59,"puede",["can","may (poder)"],"verb"],[60,"todos",["all","everyone (m.pl.)"],"det"],[61,"así",["thus","so","like this"],"adv"],[62,"nos",["us","ourselves"],"pron"],[63,"ni",["neither","nor","not even"],"conj"],[64,"parte",["part","side","place"],"noun"],[65,"tiene",["has","have (tener)"],"verb"],[66,"él",["he","him"],"pron"],[67,"uno",["one (m.)"],"num"],[68,"donde",["where"],"adv"],[69,"bien",["well","good","fine"],"adv"],[70,"tiempo",["time","weather","tense"],"noun"],[71,"mismo",["same","himself","very"],"adj"],[72,"ese",["that (m.)"],"det"],[73,"ahora",["now"],"adv"],[74,"cada",["each","every"],"det"],[75,"vida",["life"],"noun"],[76,"otro",["other","another (m.)"],"adj"],[77,"después",["after","afterwards","later"],"adv"],[78,"te",["you (direct/indirect obj.)","yourself"],"pron"],[79,"otros",["others","other (m.pl.)"],"adj"],[80,"tanto",["so much","as much","so many"],"adv"],[81,"esa",["that (f.)"],"det"],[82,"estos",["these (m.pl.)"],"det"],[83,"mucho",["a lot","much","many"],"adj"],[84,"estado",["state","status","been (pp)"],"noun"],[85,"durante",["during","for (time)"],"prep"],[86,"siempre",["always"],"adv"],[87,"día",["day"],"noun"],[88,"tan",["so","such","as (comparisons)"],"adv"],[89,"ella",["she","her"],"pron"],[90,"tres",["three"],"num"],[91,"aunque",["although","even though","even if"],"conj"],[92,"eso",["that (neuter)","it"],"pron"],[93,"hacer",["to do","to make"],"verb"],[94,"ante",["before","in front of","faced with"],"prep"],[95,"nada",["nothing","not anything"],"pron"],[96,"gran",["great","big (before noun)"],"adj"],[98,"esto",["this (neuter)"],"pron"],[100,"política",["politics","policy","political (f.)"],"noun"],[101,"haber",["to have (auxiliary)"],"verb"],[103,"año",["year"],"noun"],[105,"menos",["less","fewer","minus"],"adv"],[106,"nunca",["never"],"adv"],[107,"nuevo",["new (m.)"],"adj"],[108,"mujer",["woman","wife"],"noun"],[109,"caso",["case","situation","instance"],"noun"],[111,"ellos",["they (m.)","them"],"pron"],[112,"gobierno",["government"],"noun"],[113,"hombre",["man"],"noun"],[114,"forma",["form","way","shape"],"noun"],[115,"poder",["to be able to","power"],"verb"],[117,"decir",["to say","to tell"],"verb"],[118,"país",["country","nation"],"noun"],[119,"ciudad",["city"],"noun"],[121,"casa",["house","home"],"noun"],[122,"personas",["people","persons"],"noun"],[123,"tal",["such","such a","so"],"adj"],[124,"general",["general","overall"],"adj"],[125,"hizo",["did","made (hacer, 3sg pret)"],"verb"],[126,"entonces",["then","so","at that time"],"adv"],[127,"aquí",["here"],"adv"],[129,"noche",["night","evening"],"noun"],[130,"presidente",["president"],"noun"],[132,"nueva",["new (f.)"],"adj"],[134,"mundo",["world"],"noun"],[136,"ver",["to see"],"verb"],[143,"lugar",["place","spot","location"],"noun"],[144,"mayor",["greater","older","largest"],"adj"],[147,"agua",["water"],"noun"],[148,"trabajo",["work","job","labor"],"noun"],[151,"grupo",["group"],"noun"],[152,"problema",["problem"],"noun"],[153,"contra",["against"],"prep"],[154,"dentro",["inside","within"],"adv"],[156,"allí",["there","over there"],"adv"],[158,"llegar",["to arrive","to reach"],"verb"],[159,"dar",["to give"],"verb"],[161,"mano",["hand"],"noun"],[162,"hace",["does","makes","ago (time)"],"verb"],[164,"primero",["first (m.)"],"adj"],[165,"antes",["before","previously"],"adv"],[167,"nombre",["name","noun"],"noun"],[168,"bueno",["good (m.)"],"adj"],[170,"usted",["you (formal sing.)"],"pron"],[171,"punto",["point","dot","period"],"noun"],[172,"guerra",["war"],"noun"],[174,"padre",["father"],"noun"],[175,"partir",["to leave","to split","from (a partir de)"],"verb"],[176,"cómo",["how"],"adv"],[178,"tipo",["type","kind","guy"],"noun"],[179,"luz",["light"],"noun"],[180,"momento",["moment","time"],"noun"],[183,"poco",["little","few","a little"],"adj"],[184,"sistema",["system"],"noun"],[186,"fin",["end","purpose","goal"],"noun"],[189,"cuatro",["four"],"num"],[190,"dijo",["said (decir, 3sg pret)"],"verb"],[191,"bajo",["low","short","under"],"adj"],[192,"largo",["long"],"adj"],[194,"quiero",["I want (querer)"],"verb"],[195,"calle",["street"],"noun"],[198,"cuándo",["when (question)"],"adv"],[201,"tarde",["afternoon","late"],"noun"],[202,"saber",["to know"],"verb"],[203,"cuerpo",["body"],"noun"],[204,"número",["number"],"noun"],[207,"meses",["months"],"noun"],[208,"querer",["to want","to love"],"verb"],[213,"segundo",["second (m.)"],"adj"],[216,"cinco",["five"],"num"],[217,"amor",["love"],"noun"],[219,"persona",["person"],"noun"],[223,"conocer",["to know (person/place)"],"verb"],[224,"hoy",["today"],"adv"],[228,"hacia",["toward","around (time)"],"prep"],[230,"verdad",["truth"],"noun"],[234,"sí",["yes"],"adv"],[236,"libro",["book"],"noun"],[237,"tener",["to have"],"verb"],[239,"proceso",["process"],"noun"],[240,"semana",["week"],"noun"],[242,"seguir",["to follow","to continue"],"verb"],[244,"frente",["front","forehead","facing"],"noun"],[247,"madre",["mother"],"noun"],[248,"clase",["class","type","kind"],"noun"],[249,"señor",["mister","sir","gentleman"],"noun"],[252,"voz",["voice"],"noun"],[253,"empresa",["company","business","enterprise"],"noun"],[254,"real",["real","royal"],"adj"],[255,"pequeño",["small","little (m.)"],"adj"],[256,"tomar",["to take","to drink"],"verb"],[258,"lado",["side"],"noun"],[259,"razón",["reason","right (tener razón)"],"noun"],[260,"pueblo",["town","people","village"],"noun"],[262,"dinero",["money"],"noun"],[264,"quizá",["perhaps","maybe"],"adv"],[265,"zona",["zone","area"],"noun"],[268,"muerte",["death"],"noun"],[270,"falta",["lack","fault","foul"],"noun"],[271,"hablar",["to speak","to talk"],"verb"],[273,"cabeza",["head"],"noun"],[275,"cosa",["thing"],"noun"],[277,"pasado",["past","last"],"adj"],[278,"derecho",["right","law","straight"],"noun"],[279,"pues",["well","then","since"],"conj"],[280,"según",["according to","depending on"],"prep"],[281,"tampoco",["neither","not either"],"adv"],[282,"dónde",["where (question)"],"adv"],[283,"ayer",["yesterday"],"adv"],[284,"niño",["child","boy"],"noun"],[285,"último",["last","latest (m.)"],"adj"],[288,"pie",["foot"],"noun"],[289,"ojos",["eyes"],"noun"],[290,"lejos",["far","far away"],"adv"],[291,"quién",["who (question)"],"pron"],[292,"todavía",["still","yet"],"adv"],[295,"ojo",["eye"],"noun"],[298,"tierra",["earth","land","ground"],"noun"],[300,"señora",["Mrs.","lady","madam"],"noun"],[301,"cierto",["certain","true (m.)"],"adj"],[302,"cuenta",["account","bill","count"],"noun"],[304,"mejor",["better","best"],"adj"],[305,"acuerdo",["agreement","accord"],"noun"],[307,"gente",["people"],"noun"],[309,"horas",["hours"],"noun"],[310,"leer",["to read"],"verb"],[311,"esperar",["to wait","to hope","to expect"],"verb"],[313,"volver",["to return","to come back"],"verb"],[317,"boca",["mouth"],"noun"],[319,"posible",["possible"],"adj"],[321,"hora",["hour","time"],"noun"],[323,"ir",["to go"],"verb"],[332,"nivel",["level"],"noun"],[335,"luego",["then","later","soon"],"adv"],[336,"algo",["something","somewhat"],"pron"],[341,"camino",["road","path","way"],"noun"],[344,"poner",["to put","to place"],"verb"],[346,"mañana",["tomorrow","morning"],"noun"],[347,"diez",["ten"],"num"],[349,"niña",["girl","child (f.)"],"noun"],[350,"necesario",["necessary"],"adj"],[351,"acción",["action"],"noun"],[353,"seis",["six"],"num"],[354,"arriba",["up","above","upstairs"],"adv"],[356,"alto",["tall","high","stop!"],"adj"],[359,"abajo",["down","below","downstairs"],"adv"],[360,"escribir",["to write"],"verb"],[364,"trabajar",["to work"],"verb"],[365,"viejo",["old (m.)","old man"],"adj"],[366,"fuerza",["strength","force","power"],"noun"],[368,"paso",["step","pass","pace"],"noun"],[371,"cara",["face","expensive (f.)"],"noun"],[374,"pronto",["soon","quickly"],"adv"],[382,"joven",["young","youth"],"adj"],[384,"entrar",["to enter","to go in"],"verb"],[385,"sala",["room","hall","living room"],"noun"],[387,"dejar",["to leave","to let","to stop"],"verb"],[388,"duda",["doubt"],"noun"],[389,"hecho",["fact","done (pp hacer)"],"noun"],[390,"salir",["to leave","to go out"],"verb"],[392,"llevar",["to carry","to wear","to take"],"verb"],[394,"idea",["idea"],"noun"],[395,"libre",["free"],"adj"],[396,"siete",["seven"],"num"],[397,"comer",["to eat"],"verb"],[398,"nueve",["nine"],"num"],[399,"hija",["daughter"],"noun"],[400,"vista",["view","sight","seen (pp ver)"],"noun"],[402,"negro",["black (m.)","dark"],"adj"],[403,"blanco",["white (m.)"],"adj"],[404,"rojo",["red (m.)"],"adj"],[405,"verde",["green"],"adj"],[406,"azul",["blue"],"adj"],[407,"amarillo",["yellow (m.)"],"adj"],[408,"gris",["grey"],"adj"],[409,"rosa",["pink","rose"],"adj"],[410,"martes",["Tuesday"],"noun"],[411,"lunes",["Monday"],"noun"],[412,"miércoles",["Wednesday"],"noun"],[413,"jueves",["Thursday"],"noun"],[414,"viernes",["Friday"],"noun"],[415,"sábado",["Saturday"],"noun"],[416,"domingo",["Sunday"],"noun"],[417,"enero",["January"],"noun"],[418,"febrero",["February"],"noun"],[419,"marzo",["March"],"noun"],[420,"abril",["April"],"noun"],[421,"mayo",["May"],"noun"],[422,"junio",["June"],"noun"],[423,"julio",["July"],"noun"],[424,"agosto",["August"],"noun"],[425,"septiembre",["September"],"noun"],[426,"octubre",["October"],"noun"],[427,"noviembre",["November"],"noun"],[428,"diciembre",["December"],"noun"],[429,"cien",["one hundred"],"num"],[430,"mil",["one thousand"],"num"],[431,"medio",["half","middle","means"],"adj"],[435,"campo",["field","countryside"],"noun"],[436,"aire",["air"],"noun"],[437,"fuego",["fire"],"noun"],[438,"mar",["sea"],"noun"],[439,"río",["river"],"noun"],[440,"montaña",["mountain"],"noun"],[441,"árbol",["tree"],"noun"],[442,"flor",["flower"],"noun"],[443,"animal",["animal"],"noun"],[444,"perro",["dog"],"noun"],[445,"gato",["cat"],"noun"],[446,"pájaro",["bird"],"noun"],[447,"caballo",["horse"],"noun"],[448,"pan",["bread"],"noun"],[449,"vino",["wine","came (venir)"],"noun"],[450,"leche",["milk"],"noun"],[451,"carne",["meat","flesh"],"noun"],[452,"fruta",["fruit"],"noun"],[453,"verdura",["vegetable"],"noun"],[454,"café",["coffee","café","brown"],"noun"],[455,"sal",["salt"],"noun"],[456,"aceite",["oil"],"noun"],[457,"carta",["letter","card","menu"],"noun"],[458,"mesa",["table","desk"],"noun"],[459,"silla",["chair"],"noun"],[460,"puerta",["door"],"noun"],[461,"ventana",["window"],"noun"],[462,"piso",["floor","apartment"],"noun"],[463,"cocina",["kitchen","cooking"],"noun"],[464,"baño",["bathroom","bath"],"noun"],[465,"cama",["bed"],"noun"],[466,"ropa",["clothes","clothing"],"noun"],[467,"zapato",["shoe"],"noun"],[468,"camisa",["shirt"],"noun"],[469,"coche",["car"],"noun"],[470,"tren",["train"],"noun"],[471,"avión",["airplane"],"noun"],[472,"barco",["boat","ship"],"noun"],[474,"precio",["price"],"noun"],[475,"tienda",["store","shop","tent"],"noun"],[476,"mercado",["market"],"noun"],[477,"banco",["bank","bench"],"noun"],[478,"hospital",["hospital"],"noun"],[479,"escuela",["school"],"noun"],[480,"iglesia",["church"],"noun"],[481,"música",["music"],"noun"],[482,"película",["movie","film"],"noun"],[483,"deporte",["sport"],"noun"],[484,"juego",["game","play"],"noun"],[485,"viaje",["trip","journey","travel"],"noun"],[486,"playa",["beach"],"noun"],[487,"sol",["sun"],"noun"],[488,"luna",["moon"],"noun"],[489,"estrella",["star"],"noun"],[490,"cielo",["sky","heaven"],"noun"],[491,"nube",["cloud"],"noun"],[492,"lluvia",["rain"],"noun"],[493,"nieve",["snow"],"noun"],[494,"frío",["cold (m.)"],"adj"],[495,"caliente",["hot","warm"],"adj"],[496,"feliz",["happy"],"adj"],[497,"triste",["sad"],"adj"],[498,"cansado",["tired (m.)"],"adj"],[499,"enfermo",["sick","ill (m.)"],"adj"],[500,"hambre",["hunger"],"noun"],[501,"sed",["thirst"],"noun"],[502,"sueño",["sleep","dream"],"noun"],[503,"miedo",["fear"],"noun"],[504,"dolor",["pain","ache"],"noun"],[505,"alegría",["joy","happiness"],"noun"],[506,"tristeza",["sadness"],"noun"],[507,"esperanza",["hope"],"noun"],[508,"ayudar",["to help"],"verb"],[509,"buscar",["to search","to look for"],"verb"],[510,"encontrar",["to find","to meet"],"verb"],[511,"abrir",["to open"],"verb"],[512,"cerrar",["to close"],"verb"],[513,"empezar",["to begin","to start"],"verb"],[514,"terminar",["to finish","to end"],"verb"],[515,"comprar",["to buy"],"verb"],[516,"vender",["to sell"],"verb"],[517,"pagar",["to pay"],"verb"],[518,"costar",["to cost"],"verb"],[519,"necesitar",["to need"],"verb"],[520,"usar",["to use"],"verb"],[521,"llamar",["to call","to name"],"verb"],[522,"preguntar",["to ask (a question)"],"verb"],[523,"contestar",["to answer","to respond"],"verb"],[524,"entender",["to understand"],"verb"],[525,"pensar",["to think"],"verb"],[526,"creer",["to believe","to think"],"verb"],[527,"sentir",["to feel","to regret"],"verb"],[528,"vivir",["to live"],"verb"],[529,"morir",["to die"],"verb"],[530,"nacer",["to be born"],"verb"],[531,"crecer",["to grow"],"verb"],[532,"cambiar",["to change"],"verb"],[533,"perder",["to lose"],"verb"],[534,"ganar",["to win","to earn"],"verb"],[535,"jugar",["to play (game/sport)"],"verb"],[536,"estudiar",["to study"],"verb"],[537,"aprender",["to learn"],"verb"],[538,"enseñar",["to teach","to show"],"verb"],[539,"recordar",["to remember","to remind"],"verb"],[540,"olvidar",["to forget"],"verb"],[541,"intentar",["to try","to attempt"],"verb"],[542,"lograr",["to achieve","to manage to"],"verb"],[543,"parecer",["to seem","to appear"],"verb"],[544,"pasar",["to pass","to happen","to spend (time)"],"verb"],[545,"quedar",["to stay","to remain","to meet up"],"verb"],[546,"dormir",["to sleep"],"verb"],[547,"despertar",["to wake up"],"verb"],[548,"beber",["to drink"],"verb"],[549,"cocinar",["to cook"],"verb"],[550,"lavar",["to wash"],"verb"],[551,"limpiar",["to clean"],"verb"],[552,"correr",["to run"],"verb"],[553,"caminar",["to walk"],"verb"],[554,"viajar",["to travel"],"verb"],[555,"conducir",["to drive"],"verb"],[557,"corto",["short (length)"],"adj"],[558,"ancho",["wide","broad"],"adj"],[562,"rápido",["fast","quick"],"adj"],[563,"lento",["slow"],"adj"],[564,"fácil",["easy"],"adj"],[565,"difícil",["difficult","hard"],"adj"],[566,"importante",["important"],"adj"],[567,"interesante",["interesting"],"adj"],[568,"aburrido",["boring","bored (m.)"],"adj"],[569,"divertido",["fun","funny (m.)"],"adj"],[570,"bonito",["pretty","nice (m.)"],"adj"],[571,"feo",["ugly (m.)"],"adj"],[572,"limpio",["clean (m.)"],"adj"],[573,"sucio",["dirty (m.)"],"adj"],[575,"vacío",["empty (m.)"],"adj"],[576,"rico",["rich","delicious (m.)"],"adj"],[577,"pobre",["poor"],"adj"],[578,"seguro",["safe","sure","insurance (m.)"],"adj"],[579,"peligroso",["dangerous (m.)"],"adj"],[580,"tranquilo",["calm","quiet (m.)"],"adj"],[581,"nervioso",["nervous (m.)"],"adj"],[583,"contento",["content","happy (m.)"],"adj"],[584,"orgulloso",["proud (m.)"],"adj"],[588,"listo",["ready","clever (m.)"],"adj"],[589,"ocupado",["busy","occupied (m.)"],"adj"],[591,"sano",["healthy (m.)"],"adj"],[595,"norte",["north"],"noun"],[596,"sur",["south"],"noun"],[598,"oeste",["west"],"noun"],[599,"cerca",["near","close by"],"adv"],[601,"delante",["in front","ahead"],"adv"],[602,"detrás",["behind","in back"],"adv"],[603,"encima",["on top","above"],"adv"],[604,"debajo",["under","below"],"adv"],[605,"adelante",["forward","ahead","come in!"],"adv"],[606,"atrás",["back","behind","ago"],"adv"],[612,"demasiado",["too much","too many"],"adv"],[613,"bastante",["enough","quite","rather"],"adv"],[614,"casi",["almost","nearly"],"adv"],[616,"incluso",["even","including"],"adv"],[617,"además",["besides","also","furthermore"],"adv"],[626,"gracias",["thank you","thanks"],"interj"],[629,"hola",["hello","hi"],"interj"],[630,"adiós",["goodbye"],"interj"],[632,"claro",["of course","clear","light (color)"],"adv"],[639,"cuidado",["careful","caution","care"],"noun"],[641,"solución",["solution"],"noun"],[642,"resultado",["result","outcome"],"noun"],[643,"ejemplo",["example"],"noun"],[645,"pregunta",["question"],"noun"],[646,"respuesta",["answer","response"],"noun"],[648,"historia",["history","story"],"noun"],[649,"sociedad",["society"],"noun"],[650,"cultura",["culture"],"noun"],[651,"arte",["art"],"noun"],[652,"ciencia",["science"],"noun"],[653,"tecnología",["technology"],"noun"],[654,"educación",["education"],"noun"],[655,"salud",["health"],"noun"],[656,"economía",["economy","economics"],"noun"],[658,"servicio",["service"],"noun"],[659,"producto",["product"],"noun"],[663,"proyecto",["project","plan"],"noun"],[665,"plan",["plan"],"noun"],[666,"objetivo",["objective","goal"],"noun"],[667,"valor",["value","courage","price"],"noun"],[668,"calidad",["quality"],"noun"],[669,"cantidad",["quantity","amount"],"noun"],[671,"espacio",["space","room"],"noun"],[674,"peso",["weight","peso (currency)"],"noun"],[675,"color",["color"],"noun"],[680,"método",["method"],"noun"],[683,"efecto",["effect"],"noun"],[684,"causa",["cause","reason"],"noun"],[689,"manera",["way","manner"],"noun"],[690,"modo",["way","mode","manner"],"noun"],[694,"período",["period","era"],"noun"],[697,"siglo",["century"],"noun"],[699,"futuro",["future"],"noun"],[700,"presente",["present","gift"],"noun"],[703,"final",["end","final"],"noun"],[706,"relación",["relationship","relation"],"noun"],[707,"diferencia",["difference"],"noun"],[709,"ventaja",["advantage"],"noun"],[711,"posibilidad",["possibility"],"noun"],[712,"oportunidad",["opportunity","chance"],"noun"],[713,"riesgo",["risk"],"noun"],[718,"éxito",["success"],"noun"],[719,"fracaso",["failure"],"noun"],[720,"error",["error","mistake"],"noun"],[726,"libertad",["freedom","liberty"],"noun"],[727,"justicia",["justice"],"noun"],[728,"paz",["peace"],"noun"],[734,"ley",["law"],"noun"],[740,"opinión",["opinion"],"noun"],[742,"actitud",["attitude"],"noun"],[744,"carácter",["character","personality"],"noun"],[749,"conocimiento",["knowledge"],"noun"],[750,"experiencia",["experience"],"noun"],[751,"recuerdo",["memory","souvenir"],"noun"],[753,"deseo",["desire","wish"],"noun"],[756,"emoción",["emotion","excitement"],"noun"],[757,"sentimiento",["feeling","sentiment"],"noun"],[758,"pasión",["passion"],"noun"],[760,"curiosidad",["curiosity"],"noun"],[761,"sorpresa",["surprise"],"noun"],[763,"vergüenza",["shame","embarrassment"],"noun"],[764,"orgullo",["pride"],"noun"],[769,"confianza",["trust","confidence"],"noun"],[770,"amistad",["friendship"],"noun"],[771,"familia",["family"],"noun"],[772,"hijo",["son","child"],"noun"],[774,"hermano",["brother"],"noun"],[775,"hermana",["sister"],"noun"],[776,"abuelo",["grandfather"],"noun"],[777,"abuela",["grandmother"],"noun"],[780,"tío",["uncle"],"noun"],[781,"tía",["aunt"],"noun"],[784,"esposo",["husband","spouse (m.)"],"noun"],[785,"esposa",["wife","spouse (f.)"],"noun"],[786,"novio",["boyfriend","fiancé","groom"],"noun"],[787,"novia",["girlfriend","fiancée","bride"],"noun"],[788,"amigo",["friend (m.)"],"noun"],[789,"amiga",["friend (f.)"],"noun"],[793,"jefe",["boss","chief","head"],"noun"],[795,"médico",["doctor","medical (m.)"],"noun"],[797,"maestro",["teacher (m.)","master"],"noun"],[798,"alumno",["student (m.)"],"noun"],[801,"policía",["police","police officer"],"noun"],[806,"periodista",["journalist"],"noun"],[807,"artista",["artist"],"noun"],[809,"actor",["actor"],"noun"],[810,"escritor",["writer (m.)"],"noun"],[816,"nariz",["nose"],"noun"],[818,"oreja",["ear (outer)"],"noun"],[819,"diente",["tooth"],"noun"],[820,"pelo",["hair"],"noun"],[821,"cuello",["neck"],"noun"],[822,"hombro",["shoulder"],"noun"],[823,"brazo",["arm"],"noun"],[825,"dedo",["finger","toe"],"noun"],[826,"pecho",["chest","breast"],"noun"],[828,"pierna",["leg"],"noun"],[829,"rodilla",["knee"],"noun"],[831,"corazón",["heart"],"noun"],[833,"piel",["skin"],"noun"],[836,"estómago",["stomach"],"noun"],[837,"cerebro",["brain"],"noun"],[851,"escuchar",["to listen"],"verb"],[852,"mirar",["to look at","to watch"],"verb"],[855,"reír",["to laugh"],"verb"],[856,"llorar",["to cry"],"verb"],[857,"sonreír",["to smile"],"verb"],[859,"abrazar",["to hug","to embrace"],"verb"],[861,"caer",["to fall"],"verb"],[862,"subir",["to go up","to climb","to upload"],"verb"],[863,"bajar",["to go down","to lower","to download"],"verb"],[864,"cruzar",["to cross"],"verb"],[867,"parar",["to stop"],"verb"],[869,"comenzar",["to begin","to start"],"verb"],[870,"continuar",["to continue"],"verb"],[871,"repetir",["to repeat"],"verb"],[872,"explicar",["to explain"],"verb"],[875,"elegir",["to choose","to elect"],"verb"],[876,"decidir",["to decide"],"verb"],[877,"resolver",["to solve","to resolve"],"verb"],[878,"mejorar",["to improve","to get better"],"verb"],[879,"aumentar",["to increase"],"verb"],[880,"reducir",["to reduce","to decrease"],"verb"],[881,"crear",["to create"],"verb"],[882,"construir",["to build","to construct"],"verb"],[884,"proteger",["to protect"],"verb"],[885,"cuidar",["to take care of"],"verb"],[887,"amar",["to love"],"verb"],[888,"odiar",["to hate"],"verb"],[889,"confiar",["to trust","to rely on"],"verb"],[890,"mentir",["to lie","to tell lies"],"verb"],[892,"esconder",["to hide"],"verb"],[893,"mostrar",["to show"],"verb"],[895,"recibir",["to receive"],"verb"],[896,"aceptar",["to accept"],"verb"],[897,"rechazar",["to reject","to refuse"],"verb"],[898,"permitir",["to allow","to permit"],"verb"],[901,"disfrutar",["to enjoy"],"verb"],[902,"sufrir",["to suffer"],"verb"],[905,"vencer",["to defeat","to overcome"],"verb"],[906,"luchar",["to fight","to struggle"],"verb"],[907,"defender",["to defend"],"verb"],[912,"alcanzar",["to reach","to catch up"],"verb"],[913,"superar",["to overcome","to surpass"],"verb"],[914,"avanzar",["to advance","to move forward"],"verb"],[916,"reunirse",["to meet","to get together"],"verb"],[918,"casarse",["to get married"],"verb"],[923,"curar",["to cure","to heal"],"verb"],[925,"recuperarse",["to recover","to get better"],"verb"],[930,"millón",["one million"],"num"],[933,"tercero",["third"],"adj"],[936,"sexto",["sixth"],"adj"],[940,"décimo",["tenth"],"adj"],[944,"traducir",["to translate"],"verb"],[945,"idioma",["language"],"noun"],[946,"lengua",["language","tongue"],"noun"],[947,"palabra",["word"],"noun"],[948,"frase",["sentence","phrase"],"noun"],[952,"teléfono",["telephone","phone"],"noun"],[953,"mensaje",["message"],"noun"],[954,"internet",["internet"],"noun"],[955,"computadora",["computer"],"noun"],[956,"pantalla",["screen"],"noun"],[958,"red",["network","net","web"],"noun"],[961,"imagen",["image","picture"],"noun"],[962,"foto",["photo","photograph"],"noun"],[966,"canción",["song"],"noun"],[970,"periódico",["newspaper"],"noun"],[971,"noticias",["news"],"noun"],[974,"señal",["signal","sign"],"noun"],[977,"oferta",["offer","sale","supply"],"noun"],[980,"tarjeta",["card"],"noun"],[983,"cambio",["change","exchange"],"noun"],[988,"ahorro",["savings","saving"],"noun"],[990,"presupuesto",["budget"],"noun"],[993,"trato",["deal","treatment"],"noun"],[994,"reunión",["meeting"],"noun"],[997,"fiesta",["party","festival","holiday"],"noun"],[1000,"tradición",["tradition"],"noun"],[1001,"realizar",["to carry out","to perform","to achieve"],"verb",1],[1002,"presentar",["to present","to introduce","to submit"],"verb",1],[1003,"considerar",["to consider","to regard"],"verb",1],[1004,"señalar",["to point out","to indicate","to signal"],"verb",1],[1005,"tratar",["to treat","to try","to deal with"],"verb",1],[1006,"contar",["to count","to tell (a story)","to have available"],"verb",1],[1007,"existir",["to exist"],"verb",1],[1008,"incluir",["to include"],"verb",1],[1009,"mantener",["to maintain","to keep","to support"],"verb",1],[1010,"utilizar",["to use","to utilize"],"verb",1],[1011,"ofrecer",["to offer"],"verb",1],[1012,"obtener",["to obtain","to get"],"verb",1],[1013,"generar",["to generate","to create"],"verb",1],[1014,"convertir",["to convert","to turn into","to become"],"verb",1],[1015,"producir",["to produce","to cause"],"verb",1],[1016,"representar",["to represent","to mean","to perform"],"verb",1],[1017,"desarrollar",["to develop","to carry out"],"verb",1],[1018,"indicar",["to indicate","to show","to point out"],"verb",1],[1019,"asegurar",["to assure","to secure","to ensure"],"verb",1],[1020,"venir",["to come"],"verb",1],[1021,"participar",["to participate","to take part"],"verb",1],[1022,"formar",["to form","to train","to be part of"],"verb",1],[1023,"afirmar",["to state","to affirm","to claim"],"verb",1],[1024,"reconocer",["to recognize","to acknowledge"],"verb",1],[1025,"destacar",["to stand out","to highlight","to emphasize"],"verb",1],[1026,"pedir",["to ask for","to request","to order"],"verb",1],[1027,"ocurrir",["to occur","to happen"],"verb",1],[1028,"cumplir",["to fulfill","to comply","to turn (age)"],"verb",1],[1029,"evitar",["to avoid","to prevent"],"verb",1],[1030,"enfrentar",["to face","to confront"],"verb",1],[1031,"equipo",["team","equipment","gear"],"noun",1],[1032,"partido",["political party","match (sports)","game"],"noun",1],[1033,"estudio",["study","studio","research"],"noun",1],[1034,"desarrollo",["development","growth"],"noun",1],[1035,"centro",["center","downtown","middle"],"noun",1],[1036,"investigación",["investigation","research"],"noun",1],[1037,"tema",["topic","theme","subject"],"noun",1],[1038,"mes",["month"],"noun",1],[1039,"director",["director","manager","principal"],"noun",1],[1040,"información",["information"],"noun",1],[1041,"actividad",["activity"],"noun",1],[1042,"recurso",["resource","means","appeal (legal)"],"noun",1],[1043,"población",["population","town"],"noun",1],[1044,"seguridad",["security","safety","certainty"],"noun",1],[1045,"enfermedad",["illness","disease","sickness"],"noun",1],[1046,"uso",["use","usage","custom"],"noun",1],[1047,"dato",["piece of data","fact","datum"],"noun",1],[1048,"sector",["sector","area","field"],"noun",1],[1049,"comunidad",["community"],"noun",1],[1050,"serie",["series","sequence","TV series"],"noun",1],[1051,"edad",["age","era"],"noun",1],[1052,"realidad",["reality","truth","fact"],"noun",1],[1053,"mayoría",["majority","most (of)"],"noun",1],[1054,"cine",["cinema","movie theater","film (art)"],"noun",1],[1055,"personaje",["character (fiction)","public figure"],"noun",1],[1056,"atención",["attention","care","customer service"],"noun",1],[1057,"capacidad",["capacity","ability","skill"],"noun",1],[1058,"apoyo",["support","help","backing"],"noun",1],[1059,"región",["region","area"],"noun",1],[1060,"función",["function","role","show (theater)"],"noun",1],[1061,"decisión",["decision"],"noun",1],[1062,"secretaría",["ministry","secretary's office","secretariat"],"noun",1],[1063,"carrera",["career","race","degree (studies)"],"noun",1],[1064,"necesidad",["need","necessity"],"noun",1],[1065,"movimiento",["movement","motion"],"noun",1],[1066,"propuesta",["proposal","suggestion"],"noun",1],[1067,"energía",["energy","power"],"noun",1],[1068,"alimento",["food","nourishment"],"noun",1],[1069,"usuario",["user","customer"],"noun",1],[1070,"dólar",["dollar"],"noun",1],[1071,"universidad",["university"],"noun",1],[1072,"autoridad",["authority","official"],"noun",1],[1073,"organización",["organization"],"noun",1],[1074,"producción",["production","output"],"noun",1],[1075,"área",["area","field","zone"],"noun",1],[1076,"institución",["institution"],"noun",1],[1077,"minuto",["minute"],"noun",1],[1078,"sentido",["sense","meaning","direction","feeling"],"noun",1],[1079,"millón",["million"],"noun",1],[1080,"mexicano",["Mexican"],"adj",1],[1081,"nacional",["national"],"adj",1],[1082,"social",["social"],"adj",1],[1083,"público",["public","public (m.)"],"adj",1],[1084,"político",["political"],"adj",1],[1085,"internacional",["international"],"adj",1],[1086,"económico",["economic","economical"],"adj",1],[1087,"humano",["human","humane"],"adj",1],[1088,"federal",["federal"],"adj",1],[1089,"diferente",["different"],"adj",1],[1090,"próximo",["next","nearby","upcoming"],"adj",1],[1091,"principal",["main","principal","chief"],"adj",1],[1092,"mundial",["worldwide","world (adj.)"],"adj",1],[1093,"único",["unique","only","sole"],"adj",1],[1094,"diverso",["diverse","various","different"],"adj",1],[1095,"cultural",["cultural"],"adj",1],[1096,"actual",["current","present-day"],"adj",1],[1097,"natural",["natural"],"adj",1],[1098,"especial",["special"],"adj",1],[1099,"siguiente",["following","next"],"adj",1],[1100,"menor",["lesser","younger","minor","smaller"],"adj",1],[1101,"distinto",["distinct","different"],"adj",1],[1102,"reciente",["recent"],"adj",1],[1103,"aún",["still","yet","even"],"adv",1],[1104,"ahí",["there","right there"],"adv",1],[1105,"actualmente",["currently","nowadays"],"adv",1],[1106,"finalmente",["finally","in the end"],"adv",1],[1107,"principalmente",["mainly","primarily"],"adv",1],[1108,"apenas",["barely","just","hardly","as soon as"],"adv",1]];
+const W=RAW.map(([r,w,t,p,m])=>({rank:r,word:w,translations:t,pos:p,mx:!!m}));
+let P={correct:{},incorrect:{},seen:{}};
+let F={pos:'all',mx:false};
+let tab='cards';
+let cPool=[],cIdx=0,cFlip=false,cDir='es-en',cSes={c:0,w:0};
+let qPool=[],qIdx=0,qQ=null,qCh=null,qSes={c:0,w:0};
+let lPage=0,lQ='';
+const PP=30;
+
+function lp(){try{const r=localStorage.getItem('sp1000_p');if(r)P=JSON.parse(r);}catch{}}
+function sp(){try{localStorage.setItem('sp1000_p',JSON.stringify(P));}catch{}}
+function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function gp(){let p=W;if(F.mx)p=p.filter(w=>w.mx);if(F.pos!=='all')p=p.filter(w=>w.pos===F.pos);return p;}
+function ptag(p){return `<span class="bdg p${p}">${p}</span>`;}
+function rb(r){return `<span class="bdg brank">#${r}</span>`;}
+function mb(){return '<span class="bdg bmx">🇲🇽 MX</span>';}
+
+function uh(){
+  const s=Object.keys(P.seen).length;
+  const c=Object.values(P.correct).reduce((a,b)=>a+b,0);
+  const i=Object.values(P.incorrect).reduce((a,b)=>a+b,0);
+  const t=c+i;
+  document.getElementById('sc').textContent=s+' / '+W.length+' seen';
+  const a=document.getElementById('ha');
+  a.textContent=t>0?Math.round(c/t*100)+'% accuracy':'';
+  document.getElementById('pf').style.width=(s/W.length*100)+'%';
+}
+
+function sw(t){
+  tab=t;
+  ['cards','quiz','list','stats'].forEach(x=>document.getElementById('t-'+x).classList.toggle('on',x===t));
+  document.getElementById('fb').style.display=t==='stats'?'none':'flex';
+  if(t==='cards'){ic();rc();}
+  else if(t==='quiz'){iq();rq();}
+  else if(t==='list'){lPage=0;lQ='';rl();}
+  else rs();
+}
+
+function af(){F.pos=document.getElementById('pf2').value;if(tab==='cards'){ic();rc();}else if(tab==='quiz'){iq();rq();}else if(tab==='list'){lPage=0;rl();}}
+function tmx(){F.mx=!F.mx;document.getElementById('mxb').classList.toggle('on',F.mx);af();}
+function rf(){F={pos:'all',mx:false};document.getElementById('pf2').value='all';document.getElementById('mxb').classList.remove('on');af();}
+
+// CARDS
+function ic(){cPool=sh(gp());cIdx=0;cFlip=false;cSes={c:0,w:0};}
+function rc(){
+  const el=document.getElementById('cnt');
+  if(!cPool.length){el.innerHTML='<p class="emp">No words match.</p>';return;}
+  const w=cPool[cIdx%cPool.length];
+  const front=cDir==='es-en'?w.word:w.translations[0];
+  const back=cDir==='es-en'?w.translations.join(' · '):w.word;
+  const t=cSes.c+cSes.w,acc=t>0?Math.round(cSes.c/t*100)+'%':'';
+  el.innerHTML=`
+    <div class="srow">
+      <span class="sm">Card ${cIdx+1}</span>
+      <div style="display:flex;gap:12px"><span class="sc">✓ ${cSes.c}</span><span class="sw">✗ ${cSes.w}</span>${acc?`<span class="sa">${acc}</span>`:''}</div>
+      <button class="dbtn" onclick="td()">${cDir==='es-en'?'ES→EN':'EN→ES'}</button>
+    </div>
+    <div class="card${cFlip?' rv':''}" onclick="fc()">
+      <div class="cbadges">${rb(w.rank)}${w.mx?mb():''}</div>
+      <div class="${cFlip?'cback':'cword'}">${cFlip?back:front}</div>
+      ${!cFlip?'<div class="chint">tap to reveal</div>':''}
+      ${cFlip?`<div class="fg">${ptag(w.pos)}</div>`:''}
+    </div>
+    ${cFlip?`<div class="brow"><button class="btn bwrong" onclick="cn('w')">✗</button><button class="btn bskip" onclick="cn('s')">→</button><button class="btn bright" onclick="cn('r')">✓</button></div>`:`<button class="bprim" onclick="fc()">Reveal</button>`}`;
+}
+function fc(){cFlip=!cFlip;rc();}
+function td(){cDir=cDir==='es-en'?'en-es':'es-en';cFlip=false;rc();}
+function cn(r){
+  const w=cPool[cIdx%cPool.length];
+  P.seen[w.rank]=true;
+  if(r==='r'){P.correct[w.rank]=(P.correct[w.rank]||0)+1;cSes.c++;}
+  else if(r==='w'){P.incorrect[w.rank]=(P.incorrect[w.rank]||0)+1;cSes.w++;}
+  sp();uh();cIdx++;cFlip=false;rc();
+}
+
+// QUIZ
+function iq(){qPool=sh(gp());qIdx=0;qQ=null;qCh=null;qSes={c:0,w:0};bq();}
+function bq(){
+  if(!qPool.length)return;
+  const w=qPool[qIdx%qPool.length];
+  const cor=w.translations[0];
+  const sp2=W.filter(x=>x.pos===w.pos&&x.rank!==w.rank);
+  const pool=sp2.length>=3?sp2:W.filter(x=>x.rank!==w.rank);
+  const dis=sh(pool).slice(0,3).map(x=>x.translations[0]);
+  const opts=sh([cor,...dis]);
+  qQ={word:w,correct:cor,options:opts};qCh=null;
+}
+function rq(){
+  const el=document.getElementById('cnt');
+  if(!qPool.length){el.innerHTML='<p class="emp">No words match.</p>';return;}
+  const q=qQ,t=qSes.c+qSes.w,acc=t>0?Math.round(qSes.c/t*100)+'%':'';
+  const opts=q.options.map((o,i)=>{
+    let cls='obtn';
+    if(qCh){if(o===q.correct)cls+=' cor';else if(o===qCh)cls+=' wrg';else cls+=' dim';}
+    const safe=o.replace(/'/g,"\'");
+    return `<button class="${cls}" ${qCh?'disabled':''} onclick="pq('${safe}')">${String.fromCharCode(65+i)})  ${o}</button>`;
+  }).join('');
+  el.innerHTML=`
+    <div class="srow">
+      <span class="sm">Q ${qIdx+1}</span>
+      <div style="display:flex;gap:12px"><span class="sc">✓ ${qSes.c}</span><span class="sw">✗ ${qSes.w}</span>${acc?`<span class="sa">${acc}</span>`:''}</div>
+      <span></span>
+    </div>
+    <div class="pcard">
+      <div class="plbl">Translate:</div>
+      <div class="pword">${q.word.word}</div>
+      <div class="pbadges">${ptag(q.word.pos)}${rb(q.word.rank)}${q.word.mx?mb():''}</div>
+    </div>
+    ${opts}
+    ${qCh?'<button class="bnext" onclick="nq()">Next →</button>':''}`;
+}
+function pq(o){
+  if(qCh)return;qCh=o;
+  const w=qQ.word;P.seen[w.rank]=true;
+  if(o===qQ.correct){P.correct[w.rank]=(P.correct[w.rank]||0)+1;qSes.c++;}
+  else{P.incorrect[w.rank]=(P.incorrect[w.rank]||0)+1;qSes.w++;}
+  sp();uh();rq();
+}
+function nq(){qIdx++;bq();rq();}
+
+// LIST
+function rl(){
+  const el=document.getElementById('cnt');
+  const base=gp(),q=lQ.toLowerCase();
+  const fil=q.length>1?base.filter(w=>w.word.toLowerCase().includes(q)||w.translations.some(t=>t.toLowerCase().includes(q))):base;
+  const pages=Math.ceil(fil.length/PP),shown=fil.slice(lPage*PP,(lPage+1)*PP);
+  const items=shown.map(w=>{
+    const c=P.correct[w.rank]||0,i=P.incorrect[w.rank]||0,t=c+i,a=t>0?Math.round(c/t*100):null;
+    const seen=P.seen[w.rank];
+    const cls=seen?(a>=80?'li lg':a!==null?'li lo':'li lm'):'li';
+    return `<div class="${cls}"><span class="lrank">#${w.rank}</span><span class="lword">${w.word}</span><span class="ltrans">${w.translations[0]}</span>${ptag(w.pos)}${w.mx?'<span style="font-size:10px;color:#E8B45A">🇲🇽</span>':''}${a!==null?`<span class="lacc ${a>=80?'g':'o'}">${a}%</span>`:''}</div>`;
+  }).join('');
+  const pag=pages>1?`<div class="pag"><button class="pbtn" onclick="lpn(-1)" ${lPage===0?'disabled':''}>‹</button><span class="pinf">${lPage+1} / ${pages}</span><button class="pbtn" onclick="lpn(1)" ${lPage>=pages-1?'disabled':''}>›</button></div>`:'';
+  el.innerHTML=`<input class="sinp" type="search" placeholder="Search Spanish or English…" value="${lQ}" oninput="lsc(this.value)">${'<div class="lcnt">'+fil.length+' words</div>'}${items}${pag}`;
+}
+function lsc(v){lQ=v;lPage=0;rl();}
+function lpn(d){lPage+=d;rl();}
+
+// STATS
+function rs(){
+  const el=document.getElementById('cnt');
+  const seen=Object.keys(P.seen).length;
+  const cor=Object.values(P.correct).reduce((a,b)=>a+b,0);
+  const inc=Object.values(P.incorrect).reduce((a,b)=>a+b,0);
+  const tot=cor+inc,acc=tot>0?Math.round(cor/tot*100):null;
+  const ps={};W.forEach(w=>{const c=P.correct[w.rank]||0,i=P.incorrect[w.rank]||0;if(!ps[w.pos])ps[w.pos]={c:0,i:0};ps[w.pos].c+=c;ps[w.pos].i+=i;});
+  const pr=Object.entries(ps).filter(([,v])=>v.c+v.i>0).sort((a,b)=>(a[1].c/(a[1].c+a[1].i))-(b[1].c/(b[1].c+b[1].i))).map(([p,{c,i}])=>{
+    const t=c+i,a=Math.round(c/t*100),bc=a>=80?'#00A86B':a>=50?'#E8B45A':'#E74C3C';
+    return `<div class="prow">${ptag(p)}<div class="pbg"><div class="pfb" style="width:${a}%;background:${bc}"></div></div><span class="ppct">${a}%</span></div>`;
+  }).join('');
+  const ms=W.filter(w=>(P.incorrect[w.rank]||0)>0).sort((a,b)=>(P.incorrect[b.rank]||0)-(P.incorrect[a.rank]||0)).slice(0,8);
+  const mh=ms.map(w=>`<div class="mchip"><span class="mw">${w.word}</span><span class="mt">${w.translations[0]}</span></div>`).join('');
+  const ac=acc>=80?'#00A86B':acc!=null?'#E8B45A':'#8BA0B4';
+  el.innerHTML=`
+    <div class="sgrid">
+      <div class="scard"><div class="snum">${seen}</div><div class="slbl">Words seen</div></div>
+      <div class="scard"><div class="snum" style="color:${ac}">${acc!=null?acc+'%':'—'}</div><div class="slbl">Accuracy</div></div>
+      <div class="scard"><div class="snum" style="color:#00A86B">${cor}</div><div class="slbl">Correct</div></div>
+      <div class="scard"><div class="snum" style="color:#E74C3C">${inc}</div><div class="slbl">Incorrect</div></div>
+    </div>
+    ${pr?`<div class="sec"><div class="sttl">By Part of Speech</div>${pr}</div>`:''}
+    ${ms.length?`<div class="sec"><div class="sttl">Top Misses</div><div class="mwrap">${mh}</div></div>`:''}
+    ${tot===0?'<p class="emp">Nothing yet. Go practice! 🇲🇽</p>':''}`;
+}
+
+lp();uh();ic();rc();
+</script>
+</body>
+</html>
