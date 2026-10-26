@@ -96,17 +96,40 @@
     .mw{color:#F5EDD6;font-weight:700;font-size:14px}.mt{color:#8BA0B4;font-size:12px;margin-left:6px}
     .emp{text-align:center;color:#8BA0B4;padding:20px;font-size:14px}
     .fg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    .tctl{display:flex;gap:8px;margin-bottom:10px}
+    .tctl select,.tctl .fbtn{flex:1}
+    .tdots{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+    .tdot{font-size:10px;padding:3px 7px;border-radius:6px;background:#243546;color:#8BA0B4;border:1px solid transparent}
+    .tdot.on{background:rgba(0,104,71,.25);color:#00A86B}
+    .tdot.cur{border-color:#E8B45A}
+    .tspk{background:#243546;border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;vertical-align:middle}
+    .tin{font-size:20px;padding:14px 16px;text-align:center}
+    .tin.ok{border-color:#00A86B;color:#00A86B}.tin.bad{border-color:#E74C3C;color:#E74C3C}
+    .tacc{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px}
+    .tacc button{background:#243546;border:none;border-radius:8px;padding:10px 0;color:#F5EDD6;font-size:17px;cursor:pointer}
+    .brow2{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+    .brow2 .btn{font-size:16px}
+    .tfb{border-radius:14px;padding:14px 16px;margin-top:4px;font-size:15px;line-height:1.5}
+    .tfb.good{background:rgba(0,104,71,.2);border:1px solid #00A86B;color:#CFEFDF}
+    .tfb.bad{background:rgba(192,57,43,.12);border:1px solid #C0392B;color:#F5D5D0}
+    .tfb b{color:#F5EDD6}
+    .tlearn{margin-top:6px;color:#E8B45A;font-weight:700}
+    .tover{width:100%;margin-top:10px}
+    .tmini{display:flex;gap:3px}
+    .tmini i{width:7px;height:7px;border-radius:50%;background:#243546}
+    .tmini i.on{background:#00A86B}
   </style>
 </head>
 <body>
 <div id="app">
   <div class="hdr">
     <div class="hdr-top">
-      <div><div class="ttl"><span>ES</span> 1000</div><div class="sub">RAE CREA · CORPES México</div></div>
+      <div><div class="ttl"><span>ES</span> 1000</div><div class="sub" id="hsub">RAE CREA · CORPES México</div></div>
       <div class="hdr-r"><div id="sc">0 / 979 seen</div><div class="hacc" id="ha"></div></div>
     </div>
     <div class="pbar"><div class="pfill" id="pf" style="width:0%"></div></div>
     <div class="tabs">
+      <button class="tbtn" onclick="sw('top')" id="t-top"><div class="tico">🏆</div>Top 1000</button>
       <button class="tbtn on" onclick="sw('cards')" id="t-cards"><div class="tico">🃏</div>Cards</button>
       <button class="tbtn" onclick="sw('quiz')" id="t-quiz"><div class="tico">🔤</div>Quiz</button>
       <button class="tbtn" onclick="sw('list')" id="t-list"><div class="tico">📋</div>List</button>
@@ -147,6 +170,14 @@ function rb(r){return `<span class="bdg brank">#${r}</span>`;}
 function mb(){return '<span class="bdg bmx">🇲🇽 MX</span>';}
 
 function uh(){
+  document.getElementById('hsub').textContent=tab==='top'?'1000mostcommonwords.com':'RAE CREA · CORPES México';
+  if(tab==='top'){
+    const n=Object.keys(TP.l).length;
+    document.getElementById('sc').textContent=n+' / 1000 learned';
+    document.getElementById('ha').textContent='';
+    document.getElementById('pf').style.width=(n/10)+'%';
+    return;
+  }
   const s=Object.keys(P.seen).length;
   const c=Object.values(P.correct).reduce((a,b)=>a+b,0);
   const i=Object.values(P.incorrect).reduce((a,b)=>a+b,0);
@@ -158,10 +189,12 @@ function uh(){
 }
 
 function sw(t){
-  tab=t;
-  ['cards','quiz','list','stats'].forEach(x=>document.getElementById('t-'+x).classList.toggle('on',x===t));
-  document.getElementById('fb').style.display=t==='stats'?'none':'flex';
-  if(t==='cards'){ic();rc();}
+  tab=t;uh();
+  ['top','cards','quiz','list','stats'].forEach(x=>document.getElementById('t-'+x).classList.toggle('on',x===t));
+  document.getElementById('fb').style.display=t==='stats'||t==='top'?'none':'flex';
+  try{localStorage.setItem('es1000_tab',t);}catch{}
+  if(t==='top'){if(!tQ)tnext();trender();}
+  else if(t==='cards'){ic();rc();}
   else if(t==='quiz'){iq();rq();}
   else if(t==='list'){lPage=0;lQ='';rl();}
   else rs();
@@ -294,7 +327,289 @@ function rs(){
     ${tot===0?'<p class="emp">Nothing yet. Go practice! 🇲🇽</p>':''}`;
 }
 
-lp();uh();ic();rc();
+// TOP 1000 — 1000mostcommonwords.com list. A word is "learned" (and retired)
+// only after it has been answered correctly in all four modes.
+const T1K=[["como","as"],["yo","I"],["su","his"],["que","that"],["él","he"],["era","was"],["para","for"],["en","on"],["son","are"],["con","with"],["ellos","they"],["ser","be"],["en","at"],["uno","one"],["tener","have"],["este","this"],["desde","from"],["por","by"],["caliente","hot"],["palabra","word"],["pero","but"],["qué","what"],["algunos","some"],["es","is"],["lo","it"],["usted","you"],["o","or"],["tenido","had"],["la","the"],["de","of"],["a","to"],["y","and"],["un","a"],["en","in"],["nos","we"],["lata","can"],["fuera","out"],["otros","other"],["eran","were"],["que","which"],["hacer","do"],["su","their"],["tiempo","time"],["si","if"],["lo hará","will"],["cómo","how"],["dicho","said"],["un","an"],["cada","each"],["decir","tell"],["hace","does"],["conjunto","set"],["tres","three"],["querer","want"],["aire","air"],["así","well"],["también","also"],["jugar","play"],["pequeño","small"],["fin","end"],["poner","put"],["casa","home"],["leer","read"],["mano","hand"],["puerto","port"],["grande","large"],["deletrear","spell"],["añadir","add"],["incluso","even"],["tierra","land"],["aquí","here"],["debe","must"],["grande","big"],["alto","high"],["tal","such"],["siga","follow"],["acto","act"],["por qué","why"],["preguntar","ask"],["hombres","men"],["cambio","change"],["se fue","went"],["luz","light"],["tipo","kind"],["fuera","off"],["necesitará","need"],["casa","house"],["imagen","picture"],["tratar","try"],["nosotros","we"],["de nuevo","again"],["animal","animal"],["punto","point"],["madre","mother"],["mundo","world"],["cerca","near"],["construir","build"],["auto","self"],["tierra","earth"],["padre","father"],["cualquier","any"],["nuevo","new"],["trabajo","work"],["parte","part"],["tomar","take"],["conseguir","get"],["lugar","place"],["hecho","made"],["vivir","live"],["donde","where"],["después","after"],["espalda","back"],["poco","little"],["sólo","only"],["ronda","round"],["hombre","man"],["año","year"],["vino","came"],["mostrar","show"],["cada","every"],["buena","good"],["me","me"],["dar","give"],["nuestro","our"],["bajo","under"],["nombre","name"],["muy","very"],["a través de","through"],["sólo","just"],["forma","form"],["frase","sentence"],["gran","great"],["pensar","think"],["decir","say"],["ayudar","help"],["bajo","low"],["línea","line"],["ser distinto","differ"],["a su vez","in turn"],["causa","cause"],["mucho","much"],["significará","mean"],["antes","before"],["movimiento","move"],["derecho","right"],["niño","boy"],["viejo","old"],["demasiado","too"],["misma","same"],["ella","she"],["todo","all"],["hay","there is"],["cuando","when"],["hasta","up to/until"],["usar","use"],["su","your"],["camino","way"],["acerca","about"],["muchos","many"],["entonces","then"],["ellos","them"],["escribir","write"],["haría","would"],["como","like"],["así","so"],["éstos","these"],["su","her"],["largo","long"],["hacer","make"],["cosa","thing"],["ver","see"],["él","him"],["dos","two"],["tiene","has"],["buscar","look"],["más","more"],["día","day"],["podía","could"],["ir","go"],["venir","come"],["hizo","he/she did"],["número","number"],["sonar","sound"],["no","no"],["más","most"],["personas","people"],["mi","my"],["sobre","over"],["saber","know"],["agua","water"],["que","than"],["llamada","call"],["primero","first"],["quién","who"],["puede","may"],["abajo","down"],["lado","side"],["estado","been"],["ahora","now"],["encontrar","find"],["cabeza","head"],["de pie","standing"],["propio","own"],["página","page"],["debería","should"],["país","country"],["encontrado","found"],["respuesta","answer"],["escuela","school"],["crecer","grow"],["estudiar","study"],["todavía","still"],["aprender","learn"],["planta","plant"],["cubierta","cover"],["alimentos","food"],["sol","sun"],["cuatro","four"],["entre","between"],["estado","state"],["mantener","keep"],["ojo","eye"],["nunca","never"],["último","last"],["dejar","let"],["pensado","thought"],["ciudad","city"],["árbol","tree"],["cruzar","cross"],["granja","farm"],["duro","hard"],["inicio","start"],["podría","might"],["historia","story"],["sierra","saw"],["lejos","far"],["mar","sea"],["dibujar","draw"],["izquierda","left"],["tarde","late"],["correr","run"],["no","don't"],["mientras","while"],["prensa","press"],["cerrar","close"],["noche","night"],["real","real"],["vida","life"],["pocos","few"],["el norte","north"],["libro","book"],["llevar","carry/take/wear"],["tomó","took"],["ciencia","science"],["comer","eat"],["habitación","room"],["amigo","friend"],["comenzó","began"],["idea","idea"],["pez","fish"],["montaña","mountain"],["parar","stop"],["una vez","once"],["base","base"],["escuchar","hear"],["caballo","horse"],["cortar","cut"],["seguro","sure"],["ver","watch"],["color","color"],["cara","face"],["madera","wood"],["principal","main"],["abierta","open"],["parecer","seem"],["juntos","together"],["próximo","next"],["blanco","white"],["niños","children"],["comenzar","begin"],["conseguido","got"],["caminar","walk"],["ejemplo","example"],["aliviar","ease"],["papel","paper"],["grupo","group"],["siempre","always"],["música","music"],["esos","those"],["ambos","both"],["marca","mark"],["a menudo","often"],["carta","letter"],["hasta","until"],["milla","mile"],["río","river"],["coche","car"],["pies","feet"],["cuidado","care"],["segundo","second"],["suficiente","enough"],["llano","plain"],["chica","girl"],["habitual","usual"],["joven","young"],["listo","ready"],["por encima de","over"],["nunca","ever"],["rojo","red"],["lista","list"],["aunque","though"],["sentir","feel"],["conversación","talk"],["pájaro","bird"],["pronto","soon"],["cuerpo","body"],["perro","dog"],["familia","family"],["directa","direct"],["plantear","suggest"],["dejar","leave"],["canción","song"],["medir","measure"],["puerta","door"],["producto","product"],["negro","black"],["corto","short"],["numeral","numeral"],["clase","class"],["viento","wind"],["pregunta","question"],["suceder","happen"],["completo","complete"],["barco","ship"],["zona","area"],["medio","half"],["roca","rock"],["orden","order"],["fuego","fire"],["el sur","south"],["problema","problem"],["pieza","piece"],["dicho","told"],["sabía","knew"],["pasar","pass"],["desde","since"],["cima","top"],["todo","whole"],["rey","king"],["calle","street"],["centímetro","centimeter"],["multiplicar","multiply"],["nada","nothing"],["curso","course"],["quedarse","stay"],["rueda","wheel"],["completo","full"],["fuerza","force"],["azul","blue"],["objeto","object"],["decidir","decide"],["superficie","surface"],["profunda","deep"],["luna","moon"],["isla","island"],["pie","foot"],["sistema","system"],["ocupado","busy"],["prueba","test"],["registro","record"],["barco","boat"],["común","common"],["oro","gold"],["posible","possible"],["plano","plane"],["en lugar de eso","instead"],["seco","dry"],["maravilla","wonder"],["risa","laugh"],["mil","thousand"],["hace","ago"],["corrió","ran"],["comprobar","check"],["juego","game"],["forma","shape"],["equiparar","equate"],["caliente","hot"],["señorita","miss"],["traído","brought"],["calor","heat"],["nieve","snow"],["neumáticos","tire"],["traer","bring"],["sí","yes"],["distante","distant"],["llenar","fill"],["al este","east"],["pintar","paint"],["idioma","language"],["entre","among"],["unidad","unit"],["potencia","power"],["ciudad","town"],["fina","thin"],["cierto","certain"],["volar","fly"],["caer","fall"],["conducir","lead"],["grito","cry"],["oscuro","dark"],["máquina","machine"],["nota","note"],["esperar","wait"],["plan","plan"],["figura","figure"],["estrella","star"],["caja","box"],["sustantivo","noun"],["campo","field"],["resto","rest"],["correcta","correct"],["capaz","able"],["kilo","kilo"],["hecho","done"],["belleza","beauty"],["manejar","drive"],["destacar","stand out"],["contener","contain"],["delante","front"],["enseñar","teach"],["semana","week"],["último","final"],["dio","gave"],["verde","green"],["oh","oh"],["rápido","quick"],["desarrollar","develop"],["océano","ocean"],["cálido","warm"],["libre","free"],["minuto","minute"],["fuerte","strong"],["especial","special"],["mente","mind"],["detrás","behind"],["claro","clear"],["cola","tail"],["producir","produce"],["hecho","fact"],["espacio","space"],["oído","heard"],["mejor","best"],["hora","hour"],["mejor","better"],["verdadero","true"],["durante","during"],["cien","hundred"],["cinco","five"],["recordar","remember"],["paso","step"],["temprana","early"],["agarrar","hold"],["oeste","west"],["suelo","ground"],["interés","interest"],["llegar","arrive/come/reach"],["rápido","fast"],["verbo","verb"],["cantar","sing"],["escuchar","listen"],["seis","six"],["mesa","table"],["viajes","travel"],["menos","less"],["mañana","morning"],["diez","ten"],["sencilla","simple"],["varios","several"],["vocal","vowel"],["hacia","toward"],["guerra","war"],["poner","lay"],["contra","against"],["patrón","pattern"],["lenta","slow"],["centro","center"],["amar","love"],["persona","person"],["dinero","money"],["servir","serve"],["aparecer","appear"],["carretera","road"],["mapa","map"],["lluvia","rain"],["regla","rule"],["gobernar","govern"],["jalar","pull"],["frío","cold"],["aviso","notice"],["voz","voice"],["energía","energy"],["caza","hunt"],["probable","probable"],["cama","bed"],["hermano","brother"],["huevo","egg"],["paseo","walk/ride"],["celular","cell"],["creer","believe"],["quizás","perhaps"],["recoger","pick up"],["repentina","sudden"],["contar","count"],["plaza","square"],["razón","reason"],["longitud","length"],["representar","represent"],["arte","art"],["sujeto","subject"],["región","region"],["tamaño","size"],["variar","to vary"],["resolver","settle"],["hablar","speak"],["peso","weight"],["general","general"],["hielo","ice"],["materia","mass"],["círculo","circle"],["par","pair"],["incluir","include"],["dividir","divide"],["sílaba","syllable"],["sentido","felt"],["gran","grand"],["bola","ball"],["aún","yet"],["ola","wave"],["caer","drop"],["corazón","heart"],["ancho","width"],["presente","present"],["pesada","heavy"],["danza","dance"],["motor","engine"],["posición","position"],["brazo","arm"],["amplio","wide"],["vela","sail"],["materiales","material"],["fracción","fraction"],["bosque","forest"],["sentarse","sit"],["carrera","race"],["ventana","window"],["tienda","store"],["verano","summer"],["tren","train"],["sueño","dream"],["demostrar","prove"],["solitario","lone"],["pierna","leg"],["ejercicio","exercise"],["pared","wall"],["capturas","the catches"],["montar","mount"],["desear","to wish"],["cielo","sky"],["bordo","board"],["alegría","joy"],["invierno","winter"],["ayer","yesterday"],["escrito","written"],["salvaje","wild"],["instrumento","instrument"],["guardar","to keep"],["vidrio/vaso","glass"],["hierba","grass"],["vaca","cow"],["trabajo","job"],["borde","edge"],["señal","sign"],["visita","visit"],["pasado","past"],["suave","soft"],["diversión","fun"],["brillante","bright"],["gas","gas"],["tiempo","weather"],["mes","month"],["millones","million"],["soportar","bear"],["acabar","finish"],["feliz","happy"],["esperanza","hope"],["flor","flower"],["vestir","to wear"],["extraño","strange"],["ido","gone"],["comercio","trade"],["melodía","melody"],["viaje","trip"],["oficina","office"],["recibir","receive"],["fila","row"],["boca","mouth"],["exacta","exact"],["símbolo","symbol"],["morir","die"],["menos","least"],["problemas","trouble"],["grito","shout"],["excepto","except"],["escribió","he/she wrote"],["semilla","seed"],["tono","tone"],["unirse","join"],["sugerir","suggest"],["limpia","clean"],["rotura","break"],["dama","lady"],["patio","yard"],["aumentar","increase"],["mal","bad"],["golpe","blow/hit"],["aceite","oil"],["sangre","blood"],["tocar","touch"],["creció","grew"],["céntimo","cent"],["mezclar","mix"],["equipo","team"],["alambre","wire"],["costo","cost"],["perdido","lost"],["marrón","brown"],["desgastar","wear away"],["jardín","garden"],["igual","equal"],["enviado","sent"],["elegir","choose"],["cayó","fell"],["encajar","fit"],["fluir","flow"],["justo","fair"],["banco","bank"],["recoger","collect"],["guardar","save"],["control","control"],["decimal","decimal"],["oreja","ear"],["demás/otro","else"],["bastante","enough/quite"],["romper","break"],["caso","case"],["medio","middle"],["matar","kill"],["hijo","son"],["lago","lake"],["momento","moment"],["escala","scale"],["fuerte","loud"],["primavera","spring"],["observar","observe"],["niño","child"],["recta","straight"],["consonante","consonant"],["nación","nation"],["diccionario","dictionary"],["leche","milk"],["velocidad","speed"],["método","method"],["órgano","organ"],["pagar","pay"],["edad","age"],["sección","section"],["vestido","dress"],["nube","cloud"],["sorpresa","surprise"],["tranquila","quiet"],["piedra","stone"],["pequeñito","tiny"],["ascenso","climb"],["fresco","cool"],["diseño","design"],["pobre","poor"],["mucho","lot"],["experimento","experiment"],["inferior","bottom"],["llave","key"],["hierro","iron"],["sola","single"],["palo","stick"],["plana","flat"],["veinte","twenty"],["piel","skin"],["sonrisa","smile"],["plegar","fold"],["agujero","hole"],["saltar","jump"],["bebé","baby"],["ocho","eight"],["pueblo","village"],["reunir","meet"],["raíz","root"],["comprar","buy"],["aumentar","raise"],["resolver","solve"],["de metal","made of metal"],["si","whether"],["empujar","push"],["siete","seven"],["párrafo","paragraph"],["tercero","third"],["deberá","shall"],["en espera","on hold"],["pelo","hair"],["describir","describe"],["cocinero","cook"],["piso","floor"],["ya sea","either"],["resultado","result"],["quemar","burn"],["colina","hill"],["seguro","safe"],["gato","cat"],["siglo","century"],["considerar","consider"],["tipo","type"],["ley","law"],["poco","bit"],["costa","coast"],["copia","copy"],["frase","phrase"],["silencio","silent"],["de altura","high"],["arena","sand"],["suelo","ground"],["rollo","roll"],["temperatura","temperature"],["dedo","finger"],["industria","industry"],["valor","value"],["pelear","to fight"],["mentira","lie"],["batir","beat"],["excitar","to excite"],["natural","natural"],["vista","view"],["sentido","sense"],["capital","capital"],["no lo hará","won't do it"],["silla","chair"],["peligro","danger"],["fruta","fruit"],["rica","rich"],["grueso","thick"],["soldado","soldier"],["proceso","process"],["operar","operate"],["práctica","practice"],["separada","separate"],["difícil","difficult"],["médico","doctor"],["por favor","please"],["proteger","protect"],["mediodía","noon"],["cultivo","crop"],["moderno","modern"],["elemento","element"],["golpear","hit"],["estudiante","student"],["esquina","corner"],["partido","party"],["suministro","supply"],["de quién/cuya","whose"],["localizar","locate"],["anillo","ring"],["carácter","character"],["insecto","insect"],["capturado","caught"],["período","period"],["indicar","indicate"],["radio","radio"],["habló","I spoke"],["átomo","atom"],["el ser humano","human being"],["historia","history"],["efecto","effect"],["eléctrica","electric"],["esperar","to expect"],["hueso","bone"],["ferrocarril","railroad"],["imaginar","imagine"],["proporcionar","provide"],["estar de acuerdo","agree"],["por lo tanto","thus"],["suave","gentle"],["mujer","woman"],["capitán","captain"],["adivinar","guess"],["necesario","necessary"],["agudo","sharp"],["ala","wing"],["crear","create"],["vecino","neighbor"],["lavar","wash"],["bate","bat"],["preferir","rather"],["multitud","crowd"],["maíz","corn"],["comparar","compare"],["poema","poem"],["cordel","string"],["campana","bell"],["depender","depend"],["carne","meat"],["frotar","rub"],["tubo","tube"],["famoso","famous"],["dólar","dollar"],["corriente","stream"],["miedo","fear"],["vista","sight"],["delgado","thin"],["triángulo","triangle"],["planeta","planet"],["prisa","hurry"],["jefe","chief"],["colonia","colony"],["reloj","clock"],["mina","mine"],["empate","draw"],["entrar","enter"],["importante","major"],["fresco","fresh"],["búsqueda","search"],["enviar","send"],["amarillo","yellow"],["pistola","gun"],["permitir","allow"],["imprimir","print"],["muerto","dead"],["lugar","spot"],["desierto","desert"],["traje","suit"],["actual","current"],["ascensor","elevator"],["rosa","rose"],["llegar","arrive"],["maestro","master"],["pista","track"],["padres","parents"],["orilla","shore"],["división","division"],["sábana","sheet"],["sustancia","substance"],["favorecer","to favor"],["conectar","connect"],["mensaje","message"],["pasar","spend"],["acorde","chord"],["grasa","fat"],["contento","glad"],["original","original"],["compartir","share"],["estación","station"],["papá","dad"],["pan","bread"],["cobrar","to charge for"],["adecuada","appropriate"],["barra","bar"],["oferta","offer"],["segmento","segment"],["esclavo","slave"],["pato","duck"],["instantánea","instant"],["mercado","market"],["grado","degree"],["poblar","populate"],["pollo","chicken"],["querido","dear"],["enemigo","enemy"],["responder","reply"],["bebida","drink"],["producirse","occur"],["apoyar","to support"],["discurso","speech"],["naturaleza","nature"],["alcance","scope"],["vapor","steam"],["movimiento","motion"],["camino","path"],["líquido","liquid"],["olvidar","forget"],["significado","meant"],["cociente","quotient"],["dientes","teeth"],["concha","shell"],["cuello","neck"],["oxígeno","oxygen"],["azúcar","sugar"],["muerte","death"],["bonito","pretty"],["habilidad","skill"],["mujeres","women"],["temporada","season"],["solución","solution"],["imán","magnet"],["plata","silver"],["gracias","thank"],["rama","branch"],["partido","match"],["sufijo","suffix"],["especialmente","especially"],["higo","fig"],["tener miedo","afraid"],["enorme","huge"],["hermana","sister"],["acero","steel"],["discutir","discuss"],["adelante","forward"],["similar","similar"],["guiar","guide"],["experiencia","experience"],["puntuación","score"],["manzana","apple"],["comprado","bought"],["llevado","led"],["tirar","to throw"],["abrigo","coat"],["masa","mass"],["tarjeta","card"],["banda","band"],["cuerda","rope"],["deslizarse","to slide"],["ganar","win"],["soñar","to dream"],["noche","evening"],["condición","condition"],["alimentar","to feed"],["herramienta","tool"],["total","total"],["básico","basic"],["olor","smell"],["valle","valley"],["ni","nor"],["doble","double"],["asiento","seat"],["continuar","continue"],["bloque","block"],["tabla","chart"],["sombrero","hat"],["vender","sell"],["éxito","success"],["empresa","company"],["restar","subtract"],["evento","event"],["particular","particular"],["acuerdo","deal"],["nadar","swim"],["plazo","term (time)"],["opuesta","opposite"],["esposa","wife"],["zapato","shoe"],["hombro","shoulder"],["propagar","to spread"],["organizar","arrange"],["campamento","camp"],["inventar","invent"],["algodón","cotton"],["nacido","born"],["determinar","determine"],["el cuarto","quarter"],["nueve","nine"],["camión","truck"],["ruido","noise"],["nivel","level"],["oportunidad","chance"],["reunir","gather"],["tienda","shop"],["estirar","to stretch"],["lanzar","to launch"],["brillo","shine"],["propiedad","property"],["columna","column"],["molécula","molecule"],["seleccionar","select"],["mal","wrong"],["gris","gray"],["repetir","to repeat"],["exigir","to demand"],["amplio","broad"],["preparar","prepare"],["sal","salt"],["nariz","nose"],["plural","plural"],["enojado","angry"],["reclamación","claim"],["continente","continent"]];
+const TM=[
+  {k:'esL',from:'es',type:false,lbl:'ES → EN · list',sh:'ES→EN ☰'},
+  {k:'esT',from:'es',type:true,lbl:'ES → EN · type',sh:'ES→EN ⌨'},
+  {k:'enL',from:'en',type:false,lbl:'EN → ES · list',sh:'EN→ES ☰'},
+  {k:'enT',from:'en',type:true,lbl:'EN → ES · type',sh:'EN→ES ⌨'}
+];
+const TW=T1K.map(([es,en],i)=>({rank:i+1,es,en}));
+let TP={d:{},l:{},o:{mode:'mix',range:'all',order:'seq',auto:true}};
+let tQ=null,tAns=null,tView='quiz',tLast=0,tCount=0,tRetry=[],tSes={c:0,w:0},tLQ='',tLPage=0;
+
+function tlp(){try{const r=localStorage.getItem('es1000_t1k');if(r){const o=JSON.parse(r);TP={d:o.d||{},l:o.l||{},o:Object.assign(TP.o,o.o||{})};}}catch{}}
+function tsp(){try{localStorage.setItem('es1000_t1k',JSON.stringify(TP));}catch{}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// --- answer matching ---
+function tn(s){return s.normalize('NFC').toLowerCase().replace(/['’‘`´]/g,'').replace(/[¿?¡!.,;:"]/g,' ').replace(/\s+/g,' ').trim();}
+function tna(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function tcore(s,lang){
+  s=tn(s);
+  s=s.replace(lang==='es'?/^(el|la|los|las|un|una|unos|unas) /:/^(to|the|a|an) /,'');
+  if(lang==='en')s=s.replace(/^(he|she|it|i|you|we|they) /,'');
+  return s.trim();
+}
+// "carry/take/wear" -> carry, take, wear; "he/she did" -> he did, she did; "(de)más" -> demás, más
+function tvars(key){
+  const out=new Set();
+  [key,key.replace(/\(([^)]*)\)/g,' $1 '),key.replace(/\([^)]*\)/g,' '),key.replace(/[()]/g,'')].forEach(k=>{
+    k.split('/').forEach(p=>out.add(p));
+    let combos=[''];
+    k.trim().split(/\s+/).forEach(t=>{const n=[];combos.forEach(c=>t.split('/').forEach(a=>n.push((c+' '+a).trim())));combos=n.slice(0,24);});
+    combos.forEach(c=>out.add(c));
+  });
+  return [...out].map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+}
+const TIDX={es:{},en:{}};
+TW.forEach(w=>{
+  w.vEs=tvars(w.es);w.vEn=tvars(w.en);
+  w.vEs.forEach(v=>(TIDX.es[tcore(v,'es')]??=new Set()).add(w.rank));
+  w.vEn.forEach(v=>(TIDX.en[tcore(v,'en')]??=new Set()).add(w.rank));
+});
+// Acceptable answers in lang `tl`, including meanings of other list entries that share the prompt word
+function tAccept(w,tl){
+  const src=tl==='en'?'es':'en',ranks=new Set([w.rank]);
+  (src==='es'?w.vEs:w.vEn).forEach(v=>(TIDX[src][tcore(v,src)]||[]).forEach(r=>ranks.add(r)));
+  const vs=[];ranks.forEach(r=>{const x=TW[r-1];vs.push(...(tl==='en'?x.vEn:x.vEs));});
+  return [...new Set(vs)];
+}
+function tlev(a,b){
+  const d=Array.from({length:a.length+1},(_,i)=>[i]);
+  for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1);}
+  return d[a.length][b.length];
+}
+function tcheck(input,w,tl){
+  const acc=tAccept(w,tl),a=tcore(input,tl),raw=tn(input);
+  if(!a)return{ok:false};
+  for(const v of acc)if(a===tcore(v,tl)||raw===tn(v))return{ok:true};
+  for(const v of acc)if(tna(a)===tna(tcore(v,tl)))return{ok:true,accent:v};
+  for(const v of acc){const c=tna(tcore(v,tl));if(c.length>=4&&tlev(tna(a),c)<=1)return{ok:false,close:v};}
+  return{ok:false};
+}
+
+// --- question selection ---
+function trange(){const r=TP.o.range;if(r==='all')return[1,1000];return[+r,+r+99];}
+function tpool(){const[a,b]=trange();return TW.filter(w=>w.rank>=a&&w.rank<=b&&!TP.l[w.rank]);}
+function tneed(w){const d=TP.d[w.rank]||{};let ms=TM.filter(m=>!d[m.k]);if(TP.o.mode!=='mix')ms=ms.filter(m=>m.k===TP.o.mode);return ms;}
+function tnext(){
+  const pool=tpool().filter(w=>tneed(w).length);
+  tAns=null;
+  if(!pool.length){tQ=null;return;}
+  let w=null;
+  const due=tRetry.findIndex(x=>x.at<=tCount&&x.rank!==tLast&&pool.some(p=>p.rank===x.rank));
+  if(due>=0){w=TW[tRetry[due].rank-1];tRetry.splice(due,1);}
+  if(!w){
+    let cand=TP.o.order==='seq'?pool.slice(0,8):pool;
+    if(cand.length>1)cand=cand.filter(x=>x.rank!==tLast);
+    w=cand[Math.floor(Math.random()*cand.length)];
+  }
+  // Recognise before recall: list modes come before typing for each word
+  let ms=tneed(w);const lists=ms.filter(m=>!m.type);if(lists.length)ms=lists;
+  const m=ms[Math.floor(Math.random()*ms.length)];
+  tQ={w,m,tl:m.from==='es'?'en':'es'};
+  if(!m.type)tQ.opts=topts(w,tQ.tl);
+  tLast=w.rank;tCount++;
+}
+function tlabel(x,tl){return tl==='en'?x.en:x.es;}
+function topts(w,tl){
+  const acc=new Set(tAccept(w,tl).map(v=>tcore(v,tl)));
+  const seen=new Set([tcore(tlabel(w,tl),tl)]),ds=[];
+  for(const x of sh(TW)){
+    if(ds.length>=3)break;
+    if(x.rank===w.rank)continue;
+    if((tl==='en'?x.vEn:x.vEs).some(v=>acc.has(tcore(v,tl))))continue;
+    const k=tcore(tlabel(x,tl),tl);if(seen.has(k))continue;
+    seen.add(k);ds.push(tlabel(x,tl));
+  }
+  return sh([tlabel(w,tl),...ds]);
+}
+
+// --- answering ---
+function tmark(w,k){
+  const d=TP.d[w.rank]??={};d[k]=1;
+  if(TM.every(m=>d[m.k])){TP.l[w.rank]=Date.now();return true;}
+  return false;
+}
+function tresult(ok){
+  const w=tQ.w;
+  if(ok){tSes.c++;tAns.learned=tmark(w,tQ.m.k);}
+  else{tSes.w++;tRetry.push({rank:w.rank,at:tCount+3});}
+  tsp();uh();
+  if(TP.o.auto)tsay(w.es);
+  trender();
+}
+function tpick(i){
+  if(tAns||!tQ)return;
+  const o=tQ.opts[i];
+  tAns={pick:o,ok:o===tlabel(tQ.w,tQ.tl)};
+  tresult(tAns.ok);
+}
+function tsubmit(){
+  if(tAns||!tQ)return;
+  const inp=document.getElementById('tin'),v=inp?inp.value:'';
+  if(!v.trim()){if(inp)inp.focus();return;}
+  tAns=Object.assign({given:v},tcheck(v,tQ.w,tQ.tl));
+  tresult(tAns.ok);
+}
+function tskip(){
+  if(tAns||!tQ)return;
+  tAns={given:'',ok:false,skipped:true};
+  tresult(false);
+}
+function toverride(){
+  if(!tAns||tAns.ok)return;
+  const w=tQ.w;
+  tAns.ok=true;tAns.over=true;tSes.w--;tSes.c++;
+  const i=tRetry.findIndex(x=>x.rank===w.rank);if(i>=0)tRetry.splice(i,1);
+  tAns.learned=tmark(w,tQ.m.k);
+  tsp();uh();trender();
+}
+function tgo(){tnext();trender();}
+function tset(k,v){TP.o[k]=v;tsp();tRetry=[];tnext();trender();}
+function tinsert(ch){
+  const el=document.getElementById('tin');if(!el||el.disabled)return;
+  const s=el.selectionStart??el.value.length,e=el.selectionEnd??el.value.length;
+  el.setRangeText(ch,s,e,'end');el.focus();
+}
+
+// --- speech (Mexican Spanish voice when the device has one) ---
+let tVoice=null;
+function tpv(){
+  if(!('speechSynthesis' in window))return;
+  const vs=speechSynthesis.getVoices(),l=v=>v.lang.replace('_','-').toLowerCase();
+  tVoice=vs.find(v=>l(v)==='es-mx')||vs.find(v=>l(v)==='es-us')||vs.find(v=>l(v).startsWith('es'))||null;
+}
+if('speechSynthesis' in window){tpv();speechSynthesis.addEventListener('voiceschanged',tpv);}
+function tsay(t){
+  try{
+    if(!('speechSynthesis' in window))return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t.replace(/\//g,', ').replace(/[()]/g,''));
+    u.lang=tVoice?tVoice.lang:'es-MX';if(tVoice)u.voice=tVoice;u.rate=.9;
+    speechSynthesis.speak(u);
+  }catch{}
+}
+function tsayQ(){if(tQ)tsay(tQ.w.es);}
+
+// --- rendering ---
+function tstats(){
+  const[a,b]=trange();let learned=0,steps=0;
+  for(let r=a;r<=b;r++){if(TP.l[r])learned++;const d=TP.d[r];if(d)steps+=TM.filter(m=>d[m.k]).length;}
+  return{learned,total:b-a+1,steps};
+}
+function tdots(w,cur){
+  const d=TP.d[w.rank]||{};
+  return `<div class="tdots">${TM.map(m=>`<span class="tdot${d[m.k]?' on':''}${m.k===cur?' cur':''}">${d[m.k]?'✓ ':''}${m.sh}</span>`).join('')}</div>`;
+}
+function tctrl(){
+  const rs=['all'];for(let s=1;s<=901;s+=100)rs.push(String(s));
+  const st=tstats();
+  return `
+  <div class="tctl">
+    <select onchange="tset('mode',this.value)">
+      <option value="mix"${TP.o.mode==='mix'?' selected':''}>🔀 Mixed (all 4)</option>
+      ${TM.map(m=>`<option value="${m.k}"${TP.o.mode===m.k?' selected':''}>${m.lbl}</option>`).join('')}
+    </select>
+    <select onchange="tLPage=0;tset('range',this.value)">
+      ${rs.map(r=>`<option value="${r}"${TP.o.range===r?' selected':''}>${r==='all'?'#1–1000':'#'+r+'–'+(+r+99)}</option>`).join('')}
+    </select>
+  </div>
+  <div class="tctl">
+    <button class="fbtn${TP.o.order==='seq'?' on':''}" onclick="tset('order',TP.o.order==='seq'?'rand':'seq')">${TP.o.order==='seq'?'🔢 In order':'🎲 Shuffle'}</button>
+    <button class="fbtn${TP.o.auto?' on':''}" onclick="TP.o.auto=!TP.o.auto;tsp();trender()">🔊 Auto</button>
+    <button class="fbtn${tView==='words'?' on':''}" onclick="tView=tView==='words'?'quiz':'words';trender()">📋 Words</button>
+  </div>
+  <div class="srow">
+    <span class="sm">Learned ${st.learned} / ${st.total}</span>
+    <div style="display:flex;gap:12px"><span class="sc">✓ ${tSes.c}</span><span class="sw">✗ ${tSes.w}</span></div>
+  </div>`;
+}
+function trender(){
+  const el=document.getElementById('cnt');
+  if(tView==='words'){el.innerHTML=tctrl()+`<input class="sinp" id="tls" type="search" placeholder="Search Spanish or English…" value="${esc(tLQ)}" oninput="tLQ=this.value;tLPage=0;trl()"><div id="tlw"></div>`;trl();return;}
+  if(!tQ){
+    const st=tstats();
+    el.innerHTML=tctrl()+`<div class="pcard"><div class="pword">🎉</div><div class="plbl">${st.learned===st.total?'Every word in this range is learned!':'Nothing left for this mode in this range.'}<br>Pick another range or mode above.</div></div>`;
+    return;
+  }
+  const{w,m,tl}=tQ,a=tAns,isEs=m.from==='es';
+  const prompt=isEs?w.es:w.en;
+  let body='';
+  if(!m.type){
+    const right=tlabel(w,tl);
+    body=tQ.opts.map((o,i)=>{
+      let cls='obtn';
+      if(a){if(o===right)cls+=' cor';else if(o===a.pick)cls+=' wrg';else cls+=' dim';}
+      return `<button class="${cls}" ${a?'disabled':''} onclick="tpick(${i})">${String.fromCharCode(65+i)})  ${esc(o)}</button>`;
+    }).join('');
+  }else{
+    body=`<input class="sinp tin${a?(a.ok?' ok':' bad'):''}" id="tin" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="${a?'next':'done'}" lang="${tl}" placeholder="Type the ${tl==='en'?'English':'Spanish'}…" value="${a?esc(a.given):''}" ${a?'disabled':''}>`;
+    if(!a){
+      body+=(tl==='es'?`<div class="tacc">${['á','é','í','ó','ú','ñ','ü','¿','¡'].map(c=>`<button onpointerdown="event.preventDefault()" onclick="tinsert('${c}')">${c}</button>`).join('')}</div>`:'')
+        +`<div class="brow2"><button class="btn bskip" onclick="tskip()">I don't know</button><button class="btn bright" onclick="tsubmit()">Check</button></div>`;
+    }
+  }
+  let fb='';
+  if(a){
+    const ans=tlabel(w,tl),also=tAccept(w,tl).filter(v=>tcore(v,tl)!==tcore(ans,tl)&&!tvars(ans).includes(v)&&v!==ans);
+    if(a.ok){
+      fb=`<div class="tfb good"><b>✓ ${a.over?'Counted as correct':'Correct!'}</b>`
+        +(a.accent?`<div>Watch the accents: <b>${esc(a.accent)}</b></div>`:'')
+        +(m.type&&tn(a.given)!==tn(ans)&&!a.accent?`<div>Listed answer: <b>${esc(ans)}</b></div>`:'')
+        +(a.learned?`<div class="tlearn">🎉 Learned! “${esc(w.es)}” won't be shown again.</div>`:'')+`</div>`;
+    }else{
+      fb=`<div class="tfb bad"><b>${a.skipped?'The answer is…':a.close?'✗ So close — check the spelling':'✗ Not quite'}</b>`
+        +`<div>Answer: <b>${esc(ans)}</b>${also.length?` <span class="sm">(also: ${esc(also.slice(0,4).join(', '))})</span>`:''}</div>`
+        +`<div class="sm">It'll come back in a few questions.</div></div>`
+        +(m.type&&!a.skipped?`<button class="fbtn tover" onclick="toverride()">I was right — count it</button>`:'');
+    }
+    fb+=`<button class="bnext" onclick="tgo()">Next →</button>`;
+  }
+  el.innerHTML=tctrl()+`
+    <div class="pcard">
+      <div class="plbl">${m.lbl} — ${m.type?'type the answer':'choose the answer'}</div>
+      <div class="pword">${esc(prompt)}${isEs||a?` <button class="tspk" onclick="tsayQ()" aria-label="Hear it">🔊</button>`:''}</div>
+      ${!isEs&&a?`<div class="plbl">${esc(w.es)}</div>`:''}
+      <div class="pbadges">${rb(w.rank)}</div>
+      ${tdots(w,m.k)}
+    </div>
+    ${body}${fb}`;
+  if(m.type&&!a){const i=document.getElementById('tin');if(i)i.focus();}
+}
+function trl(){
+  const box=document.getElementById('tlw');if(!box)return;
+  const[a,b]=trange(),q=tn(tLQ);
+  let ws=TW.filter(w=>w.rank>=a&&w.rank<=b);
+  if(q)ws=ws.filter(w=>tn(w.es).includes(q)||tna(tn(w.es)).includes(tna(q))||tn(w.en).includes(q));
+  const pages=Math.max(1,Math.ceil(ws.length/PP));if(tLPage>=pages)tLPage=pages-1;
+  const items=ws.slice(tLPage*PP,(tLPage+1)*PP).map(w=>{
+    const d=TP.d[w.rank]||{},n=TM.filter(m=>d[m.k]).length,lr=!!TP.l[w.rank];
+    return `<div class="li ${lr?'lg':n?'lo':''}"${lr||n?` onclick="treset(${w.rank})"`:''}><span class="lrank">#${w.rank}</span><span class="lword">${esc(w.es)}</span><span class="ltrans">${esc(w.en)}</span><span class="tmini">${TM.map(m=>`<i class="${d[m.k]?'on':''}"></i>`).join('')}</span>${lr?'<span class="lacc g">✓</span>':''}</div>`;
+  }).join('');
+  box.innerHTML=`<div class="lcnt">${ws.length} words · tap a word with progress to reset it</div>${items||'<p class="emp">No words match.</p>'}`
+    +(pages>1?`<div class="pag"><button class="pbtn" onclick="tLPage--;trl()" ${tLPage===0?'disabled':''}>‹</button><span class="pinf">${tLPage+1} / ${pages}</span><button class="pbtn" onclick="tLPage++;trl()" ${tLPage>=pages-1?'disabled':''}>›</button></div>`:'');
+}
+function treset(r){
+  const w=TW[r-1];
+  if(!confirm(`Reset progress for “${w.es}”? It will start appearing again.`))return;
+  delete TP.d[r];delete TP.l[r];tsp();uh();
+  if(!tQ)tnext();
+  trl();
+}
+document.addEventListener('keydown',e=>{
+  if(tab!=='top'||tView!=='quiz'||e.key!=='Enter'||!tQ)return;
+  if(!tAns&&tQ.m.type){e.preventDefault();tsubmit();}
+  else if(tAns){e.preventDefault();tgo();}
+});
+
+lp();tlp();
+let t0='top';try{t0=localStorage.getItem('es1000_tab')||'top';}catch{}
+sw(['top','cards','quiz','list','stats'].includes(t0)?t0:'top');
 </script>
 </body>
 </html>
